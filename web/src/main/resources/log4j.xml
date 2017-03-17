@@ -7,99 +7,126 @@
             <param name="ConversionPattern" value="%d{HH:mm:ss} %-5p(%-35.35c{1.}:%-3L) %m%n"/>
         </layout>
     </appender>
+	<appender name="activexFile" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="logs/pinpoint/pp-web.log" />         
+		<param name="Append" value="true" />       
+        <param name="MaxBackupIndex" value="10" />
+        <param name="MaxFileSize" value="8MB" />
+        <layout class="org.apache.log4j.PatternLayout">       
+         <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss SSS\} %-5p] [%t] %c{3\} - %m%n" />       
+        </layout>         
+    </appender> 
 
 
     <logger name="com.navercorp.pinpoint" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.filter" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.controller" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.applicationmap" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.calltree.server" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
     <logger name="com.navercorp.pinpoint.web.mapper" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.service" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.dao" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
     <logger name="com.navercorp.pinpoint.collector.handler.AgentStatHandler" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
 
     <logger name="com.navercorp.pinpoint.web.mapper.ApiMetaDataMapper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
     <logger name="com.ibatis" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
     <logger name="org.springframework" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
 
     <logger name="org.apache.zookeeper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     <logger name="org.apache.zookeeper.ZooKeeper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     <logger name="org.apache.zookeeper.ClientCnxn" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
 
     <logger name="org.apache.hadoop.hbase" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="activexFile" />
     </logger>
     <logger name="org.apache.hadoop.ipc" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console" />
+        <appender-ref ref="activexFile" />
     </logger>
     <logger name="org.apache.hadoop" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console" />
+        <appender-ref ref="activexFile" />
     </logger>
-
 
     <root>
         <level value="INFO"/>
         <appender-ref ref="console" />
+        <appender-ref ref="activexFile" />
     </root>
 </log4j:configuration>

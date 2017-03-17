@@ -90,6 +90,7 @@ public class ScatterDataSerializer extends JsonSerializer<ScatterData> {
 
         jgen.writeNumber(dot.getSimpleExceptionCode());
         jgen.writeNumber(thick);
+        jgen.writeNumber(dot.getTransactionId().getAgentStartTime());
 
         jgen.writeEndArray();
     }

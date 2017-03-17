@@ -119,6 +119,9 @@ public class ScatterChartController {
             final String time = request.getParameter(PREFIX_TIME + index);
             final String responseTime = request.getParameter(PREFIX_RESPONSE_TIME + index);
 
+            logger.debug("request:{}", request.getParameter(PREFIX_TRANSACTION_ID + index) + "," + 
+            						   request.getParameter(PREFIX_TIME + index) + "," + 
+            						   request.getParameter(PREFIX_RESPONSE_TIME + index));
             if (traceId == null || time == null || responseTime == null) {
                 break;
             }
