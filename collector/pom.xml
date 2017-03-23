@@ -17,6 +17,17 @@
     </properties>
     
     <dependencies>
+    	<dependency>
+		    <groupId>com.navercorp.pinpoint</groupId>
+		    <artifactId>es-shade</artifactId>
+		    <version>${project.version}</version>
+		    <exclusions>
+		        <exclusion>
+		            <groupId>org.elasticsearch</groupId>
+		            <artifactId>elasticsearch</artifactId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-commons</artifactId>
@@ -169,17 +180,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
-	    <dependency>
-		    <groupId>com.navercorp.pinpoint</groupId>
-		    <artifactId>es-shade</artifactId>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>org.elasticsearch</groupId>
-		            <artifactId>elasticsearch</artifactId>
-		        </exclusion>
-		    </exclusions>
-		</dependency>
     </dependencies>
 
     <build>

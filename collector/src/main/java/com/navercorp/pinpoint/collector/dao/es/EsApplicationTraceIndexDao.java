@@ -51,21 +51,6 @@ public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
         }
         logger.debug("EsApplicationTraceIndexDao insert"+span.toString());
         
-        final Buffer buffer = new AutomaticBuffer(10 + AGENT_NAME_MAX_LEN);
-        buffer.putVar(span.getElapsed());
-        buffer.putSVar(span.getErr());
-        buffer.putPrefixedString(span.getAgentId());
-        final byte[] value = buffer.getBuffer();
-
-        long acceptedTime = acceptedTimeService.getAcceptedTime();
-        final byte[] distributedKey = crateRowKey(span, acceptedTime);
-        Put put = new Put(distributedKey);
-
-        put.addColumn(APPLICATION_TRACE_INDEX_CF_TRACE, makeQualifier(span) , acceptedTime, value);
-
-        hbaseTemplate.put(APPLICATION_TRACE_INDEX, put);
-        
-        
     }
 
 }
