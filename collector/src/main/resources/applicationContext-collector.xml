@@ -18,6 +18,7 @@
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.hbase,
+            			com.navercorp.pinpoint.collector.dao.es,
                         com.navercorp.pinpoint.collector.handler,
                         com.navercorp.pinpoint.collector.manage,
                         com.navercorp.pinpoint.collector.mapper,
@@ -42,6 +43,7 @@
     </bean>
 
     <import resource="classpath:applicationContext-hbase.xml"/>
+    <import resource="classpath:applicationContext-es.xml"/>
 
     <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
     	<beans:property name="cachedStatisticsDaoList">
@@ -87,8 +89,9 @@
     </bean>
 
     <bean id="udpSpanDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.UdpSpanDispatchHandler"/>
+    <bean id="esUdpSpanDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.EsUdpSpanDispatchHandler"/>
     <bean id="udpSpanDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerWrapper">
-    	<constructor-arg ref="udpSpanDispatchHandler"/>
+    	<constructor-arg ref="esUdpSpanDispatchHandler"/><!-- es turn on off -->
     </bean>
 
     <!-- Serializer Factory Beans -->

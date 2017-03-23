@@ -18,45 +18,54 @@ package com.navercorp.pinpoint.collector.handler;
 
 import java.util.List;
 
-import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
-import com.navercorp.pinpoint.common.trace.ServiceType;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
 import com.navercorp.pinpoint.collector.dao.HostApplicationMapDao;
 import com.navercorp.pinpoint.collector.dao.TracesDao;
+import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.SpanEventUtils;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
 
-import org.springframework.stereotype.Service;
-
 /**
- * @author emeroad
- * @author netspider
+ * @author yangjian
  */
 @Service
-public class SpanHandler implements SimpleHandler {
+public class EsSpanHandler implements SimpleHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TracesDao hbaseTraceDao;
+    
+    @Autowired
+    private TracesDao esTraceDao;
 
     @Autowired
     private ApplicationTraceIndexDao hbaseApplicationTraceIndexDao;
     
     @Autowired
+    private ApplicationTraceIndexDao esApplicationTraceIndexDao;
+
+    @Autowired
     private StatisticsHandler statisticsHandler;
     
     @Autowired
+    private EsStatisticsHandler esStatisticsHandler;
+
+    @Autowired
     private HostApplicationMapDao hbaseHostApplicationMapDao;
     
+    @Autowired
+    private HostApplicationMapDao esHostApplicationMapDao;
+
     @Autowired
     private ServiceTypeRegistryService registry;
 
@@ -73,7 +82,9 @@ public class SpanHandler implements SimpleHandler {
             }
 
             hbaseTraceDao.insert(span);
+            esTraceDao.insert(span);
             hbaseApplicationTraceIndexDao.insert(span);
+            esApplicationTraceIndexDao.insert(span);
 
             // insert statistics info for server map
             insertAcceptorHost(span);
@@ -93,9 +104,10 @@ public class SpanHandler implements SimpleHandler {
 
             // create virtual user
             statisticsHandler.updateCaller(span.getApplicationName(), ServiceType.USER, span.getAgentId(), span.getApplicationName(), applicationServiceType, span.getAgentId(), span.getElapsed(), isError);
-
+            esStatisticsHandler.updateCaller(span.getApplicationName(), ServiceType.USER, span.getAgentId(), span.getApplicationName(), applicationServiceType, span.getAgentId(), span.getElapsed(), isError);
             // update the span information of the current node (self)
             statisticsHandler.updateCallee(span.getApplicationName(), applicationServiceType, span.getApplicationName(), ServiceType.USER, span.getAgentId(), span.getElapsed(), isError);
+            esStatisticsHandler.updateCallee(span.getApplicationName(), applicationServiceType, span.getApplicationName(), ServiceType.USER, span.getAgentId(), span.getElapsed(), isError);
             bugCheck++;
         }
 
@@ -106,6 +118,7 @@ public class SpanHandler implements SimpleHandler {
 
             final ServiceType parentApplicationType = registry.findServiceType(span.getParentApplicationType());
             statisticsHandler.updateCallee(span.getApplicationName(), applicationServiceType, span.getParentApplicationName(), parentApplicationType, span.getAgentId(), span.getElapsed(), isError);
+            esStatisticsHandler.updateCallee(span.getApplicationName(), applicationServiceType, span.getParentApplicationName(), parentApplicationType, span.getAgentId(), span.getElapsed(), isError);
             bugCheck++;
         }
 
@@ -115,6 +128,7 @@ public class SpanHandler implements SimpleHandler {
         // the data may be different due to timeout or network error.
         
         statisticsHandler.updateResponseTime(span.getApplicationName(), applicationServiceType, span.getAgentId(), span.getElapsed(), isError);
+        esStatisticsHandler.updateResponseTime(span.getApplicationName(), applicationServiceType, span.getAgentId(), span.getElapsed(), isError);
 
         if (bugCheck != 1) {
             logger.warn("ambiguous span found(bug). span:{}", span);
@@ -147,9 +161,11 @@ public class SpanHandler implements SimpleHandler {
              */
             // save the information of caller (the spanevent that span called )
             statisticsHandler.updateCaller(span.getApplicationName(), applicationServiceType, span.getAgentId(), spanEvent.getDestinationId(), spanEventType, spanEvent.getEndPoint(), elapsed, hasException);
+            esStatisticsHandler.updateCaller(span.getApplicationName(), applicationServiceType, span.getAgentId(), spanEvent.getDestinationId(), spanEventType, spanEvent.getEndPoint(), elapsed, hasException);
 
             // save the information of callee (the span that called spanevent)
             statisticsHandler.updateCallee(spanEvent.getDestinationId(), spanEventType, span.getApplicationName(), applicationServiceType, span.getEndPoint(), elapsed, hasException);
+            esStatisticsHandler.updateCallee(spanEvent.getDestinationId(), spanEventType, span.getApplicationName(), applicationServiceType, span.getEndPoint(), elapsed, hasException);
         }
     }
 
@@ -166,6 +182,7 @@ public class SpanHandler implements SimpleHandler {
         final String parentApplicationName = span.getParentApplicationName();
         final short parentServiceType = span.getParentApplicationType();
         hbaseHostApplicationMapDao.insert(acceptorHost, spanApplicationName, applicationServiceTypeCode, parentApplicationName, parentServiceType);
+        esHostApplicationMapDao.insert(acceptorHost, spanApplicationName, applicationServiceTypeCode, parentApplicationName, parentServiceType);
     }
     
     private ServiceType getApplicationServiceType(TSpan span) {

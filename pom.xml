@@ -58,6 +58,7 @@
         <module>web</module>
         <module>java8-test</module>
         <module>hbase</module>
+        <module>es-shade</module>
     </modules>
 
     <properties>
