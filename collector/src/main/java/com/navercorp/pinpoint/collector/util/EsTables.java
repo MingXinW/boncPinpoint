@@ -39,13 +39,13 @@ public class EsTables {
 	    public static final String APPLICATION_INDEX = "applicationindex";
 	    public static final String APPLICATION_INDEX_CF_AGENTS = "agents";
 
-	    public static final String AGENTINFO = "agentInfo";
+	    public static final String AGENTINFO = "agentinfo";
 	    public static final String AGENTINFO_CF_INFO = "info";
 	    public static final String AGENTINFO_CF_INFO_IDENTIFIER = "i";
 	    public static final String AGENTINFO_CF_INFO_SERVER_META_DATA = "m";
 	    public static final String AGENTINFO_CF_INFO_JVM = "j";
 
-	    public static final String AGENT_LIFECYCLE = "agentLifecycle";
+	    public static final String AGENT_LIFECYCLE = "agentlifecycle";
 	    public static final String AGENT_LIFECYCLE_CF_STATUS = "s"; // agent lifecycle column family
 	    public static final String AGENT_LIFECYCLE_CF_STATUS_QUALI_STATES = "states"; // qualifier for agent lifecycle states
 

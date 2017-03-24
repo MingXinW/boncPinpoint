@@ -33,13 +33,13 @@ import org.springframework.stereotype.Service;
 public class StatisticsHandler {
 
     @Autowired
-    private MapStatisticsCalleeDao mapStatisticsCalleeDao;
+    private MapStatisticsCalleeDao hbaseMapStatisticsCalleeDao;
 
     @Autowired
-    private MapStatisticsCallerDao mapStatisticsCallerDao;
+    private MapStatisticsCallerDao hbaseMapStatisticsCallerDao;
 
     @Autowired
-    private MapResponseTimeDao mapResponseTimeDao;
+    private MapResponseTimeDao hbaseMapResponseTimeDao;
 
     /**
      * Calling MySQL from Tomcat generates the following message for the caller(Tomcat) :<br/>
@@ -56,7 +56,7 @@ public class StatisticsHandler {
      * @param isError
      */
     public void updateCaller(String callerApplicationName, ServiceType callerServiceType, String callerAgentId, String calleeApplicationName, ServiceType calleeServiceType, String calleeHost, int elapsed, boolean isError) {
-        mapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
+        hbaseMapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
     }
 
     /**
@@ -74,10 +74,10 @@ public class StatisticsHandler {
      * @param isError
      */
     public void updateCallee(String calleeApplicationName, ServiceType calleeServiceType, String callerApplicationName, ServiceType callerServiceType, String callerHost, int elapsed, boolean isError) {
-        mapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
+    	hbaseMapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
     }
 
     public void updateResponseTime(String applicationName, ServiceType serviceType, String agentId, int elapsed, boolean isError) {
-        mapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
+    	hbaseMapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
     }
 }

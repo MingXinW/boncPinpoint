@@ -18,8 +18,12 @@ package com.navercorp.pinpoint.collector.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.navercorp.pinpoint.collector.dao.MapResponseTimeDao;
+import com.navercorp.pinpoint.collector.dao.MapStatisticsCalleeDao;
+import com.navercorp.pinpoint.collector.dao.MapStatisticsCallerDao;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 
 /**
@@ -31,6 +35,16 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 public class EsStatisticsHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+    @Autowired
+    private MapStatisticsCalleeDao esMapStatisticsCalleeDao;
+
+    @Autowired
+    private MapStatisticsCallerDao esMapStatisticsCallerDao;
+
+    @Autowired
+    private MapResponseTimeDao esMapResponseTimeDao;
+    
     /**
      * Calling MySQL from Tomcat generates the following message for the caller(Tomcat) :<br/>
      * emeroad-app (TOMCAT) -> MySQL_DB_ID (MYSQL)[10.25.141.69:3306] <br/>
@@ -46,7 +60,7 @@ public class EsStatisticsHandler {
      * @param isError
      */
     public void updateCaller(String callerApplicationName, ServiceType callerServiceType, String callerAgentId, String calleeApplicationName, ServiceType calleeServiceType, String calleeHost, int elapsed, boolean isError) {
-    	logger.debug("EsStatisticsHandler updateCaller"+callerApplicationName);
+    	esMapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
     }
 
     /**
@@ -64,10 +78,10 @@ public class EsStatisticsHandler {
      * @param isError
      */
     public void updateCallee(String calleeApplicationName, ServiceType calleeServiceType, String callerApplicationName, ServiceType callerServiceType, String callerHost, int elapsed, boolean isError) {
-    	logger.debug("EsStatisticsHandler updateCallee"+calleeApplicationName);
+    	esMapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
     }
 
     public void updateResponseTime(String applicationName, ServiceType serviceType, String agentId, int elapsed, boolean isError) {
-    	logger.debug("EsStatisticsHandler updateResponseTime"+applicationName);
+    	esMapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
     }
 }

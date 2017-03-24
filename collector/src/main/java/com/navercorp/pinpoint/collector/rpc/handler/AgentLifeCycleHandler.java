@@ -49,7 +49,7 @@ public class AgentLifeCycleHandler {
     private Executor executor;
 
     @Autowired
-    private AgentLifeCycleDao agentLifeCycleDao;
+    private AgentLifeCycleDao hbaseAgentLifeCycleDao;
 
     public void handleLifeCycleEvent(PinpointServer pinpointServer, long eventTimestamp,
             AgentLifeCycleState agentLifeCycleState, int eventCounter) {
@@ -105,7 +105,7 @@ public class AgentLifeCycleHandler {
 
         @Override
         public void run() {
-            agentLifeCycleDao.insert(this.agentLifeCycleBo);
+        	hbaseAgentLifeCycleDao.insert(this.agentLifeCycleBo);
         }
 
     }

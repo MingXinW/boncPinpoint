@@ -27,16 +27,17 @@ import com.navercorp.pinpoint.thrift.dto.TAgentStat;
 import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 
 /**
- * @author emeroad
- * @author hyungil.jeong
+ * @author yangjian
  */
-@Service("agentStatHandler")
-public class AgentStatHandler implements Handler {
+@Service("esAgentStatHandler")
+public class EsAgentStatHandler implements Handler {
 
-    private final Logger logger = LoggerFactory.getLogger(AgentStatHandler.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(EsAgentStatHandler.class.getName());
 
     @Autowired
     private AgentStatDao hbaseAgentStatDao;
+    @Autowired
+    private AgentStatDao esAgentStatDao;
 
     public void handle(TBase<?, ?> tbase) {
         // FIXME (2014.08) Legacy - TAgentStats should not be sent over the wire.
@@ -57,6 +58,7 @@ public class AgentStatHandler implements Handler {
             agentStat.setAgentId(agentId);
             agentStat.setStartTimestamp(startTimestamp);
             hbaseAgentStatDao.insert(agentStat);
+            esAgentStatDao.insert(agentStat);
         } catch (Exception e) {
             logger.warn("AgentStat handle error. Caused:{}", e.getMessage());
         }

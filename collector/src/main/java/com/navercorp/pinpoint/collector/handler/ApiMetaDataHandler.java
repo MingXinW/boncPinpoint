@@ -35,7 +35,7 @@ public class ApiMetaDataHandler implements RequestResponseHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ApiMetaDataDao sqlMetaDataDao;
+    private ApiMetaDataDao hbaseApiMetaDataDao;
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
@@ -52,7 +52,7 @@ public class ApiMetaDataHandler implements RequestResponseHandler {
         }
 
         try {
-            sqlMetaDataDao.insert(apiMetaData);
+        	hbaseApiMetaDataDao.insert(apiMetaData);
         } catch (Exception e) {
             logger.warn("{} handler error. Caused:{}", this.getClass(), e.getMessage(), e);
             TResult result = new TResult(false);

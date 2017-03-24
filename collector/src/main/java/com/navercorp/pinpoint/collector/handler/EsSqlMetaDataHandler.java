@@ -27,14 +27,16 @@ import com.navercorp.pinpoint.thrift.dto.TResult;
 import com.navercorp.pinpoint.thrift.dto.TSqlMetaData;
 
 /**
- * @author emeroad
+ * @author yangjian
  */
 @Service
-public class SqlMetaDataHandler implements RequestResponseHandler {
+public class EsSqlMetaDataHandler implements RequestResponseHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SqlMetaDataDao hbaseSqlMetaDataDao;
+    @Autowired
+    private SqlMetaDataDao esSqlMetaDataDao;
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
@@ -52,6 +54,7 @@ public class SqlMetaDataHandler implements RequestResponseHandler {
 
         try {
         	hbaseSqlMetaDataDao.insert(sqlMetaData);
+        	esSqlMetaDataDao.insert(sqlMetaData);
         } catch (Exception e) {
             logger.warn("{} handler error. Caused:{}", this.getClass(), e.getMessage(), e);
             TResult result = new TResult(false);
@@ -61,7 +64,4 @@ public class SqlMetaDataHandler implements RequestResponseHandler {
         return new TResult(true);
     }
     
-    public void setSqlMetaDataDao(SqlMetaDataDao sqlMetaDataDao) {
-        this.hbaseSqlMetaDataDao = sqlMetaDataDao;
-    }
 }

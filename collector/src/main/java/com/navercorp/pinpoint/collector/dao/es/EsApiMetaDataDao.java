@@ -23,32 +23,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
+import com.navercorp.pinpoint.collector.dao.ApiMetaDataDao;
 import com.navercorp.pinpoint.collector.util.EsTables;
 import com.navercorp.pinpoint.collector.util.JsonUtils;
-import com.navercorp.pinpoint.thrift.dto.TSpan;
+import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
 
 /**
- * 
  * @author yangjian
  */
 @Repository
-public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
-	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-	@Autowired  
+public class EsApiMetaDataDao implements ApiMetaDataDao {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Autowired  
     private Client client;
-    
+
     @Override
-    public void insert(final TSpan span) {
-        if (span == null) {
-            throw new NullPointerException("span must not be null");
-        }
+    public void insert(TApiMetaData apiMetaData) {
         if (logger.isDebugEnabled()) {
-            logger.debug("insert:{}", span);
+            logger.debug("insert:{}", apiMetaData);
         }
-        IndexResponse response = client.prepareIndex(EsTables.APPLICATION_TRACE_INDEX,EsTables.APPLICATION_TRACE_INDEX_CF_TRACE).setSource(JsonUtils.encode(span)).execute().actionGet();
+        IndexResponse response = client.prepareIndex(EsTables.API_METADATA,EsTables.API_METADATA_CF_API_QUALI_SIGNATURE).setSource(JsonUtils.encode(apiMetaData)).execute().actionGet();
         debugInsert(response);
     }
 

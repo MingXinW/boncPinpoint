@@ -28,19 +28,22 @@ import com.navercorp.pinpoint.thrift.dto.TAgentInfo;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 
 /**
- * @author emeroad
- * @author koo.taejin
+ * @author yangjian
  */
-@Service("agentInfoHandler")
-public class AgentInfoHandler implements SimpleHandler, RequestResponseHandler {
+@Service("esAgentInfoHandler")
+public class EsAgentInfoHandler implements SimpleHandler, RequestResponseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(AgentInfoHandler.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(EsAgentInfoHandler.class.getName());
 
     @Autowired
     private AgentInfoDao hbaseAgentInfoDao;
+    @Autowired
+    private AgentInfoDao esAgentInfoDao;
 
     @Autowired
     private ApplicationIndexDao hbaseApplicationIndexDao;
+    @Autowired
+    private ApplicationIndexDao esApplicationIndexDao;
 
     public void handleSimple(TBase<?, ?> tbase) {
         handleRequest(tbase);
@@ -62,9 +65,11 @@ public class AgentInfoHandler implements SimpleHandler, RequestResponseHandler {
 
             // agent info
             hbaseAgentInfoDao.insert(agentInfo);
+            esAgentInfoDao.insert(agentInfo);
 
             // for querying agentid using applicationname
             hbaseApplicationIndexDao.insert(agentInfo);
+            esApplicationIndexDao.insert(agentInfo);
 
             return new TResult(true);
 

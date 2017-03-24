@@ -23,32 +23,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
+import com.navercorp.pinpoint.collector.dao.StringMetaDataDao;
 import com.navercorp.pinpoint.collector.util.EsTables;
 import com.navercorp.pinpoint.collector.util.JsonUtils;
-import com.navercorp.pinpoint.thrift.dto.TSpan;
+import com.navercorp.pinpoint.thrift.dto.TStringMetaData;
 
 /**
- * 
  * @author yangjian
  */
 @Repository
-public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
-	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-	@Autowired  
+public class EsStringMetaDataDao implements StringMetaDataDao {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
     private Client client;
-    
+
+
     @Override
-    public void insert(final TSpan span) {
-        if (span == null) {
-            throw new NullPointerException("span must not be null");
+    public void insert(TStringMetaData stringMetaData) {
+        if (stringMetaData == null) {
+            throw new NullPointerException("stringMetaData must not be null");
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("insert:{}", span);
+            logger.debug("insert:{}", stringMetaData);
         }
-        IndexResponse response = client.prepareIndex(EsTables.APPLICATION_TRACE_INDEX,EsTables.APPLICATION_TRACE_INDEX_CF_TRACE).setSource(JsonUtils.encode(span)).execute().actionGet();
+        IndexResponse response = client.prepareIndex(EsTables.STRING_METADATA,EsTables.STRING_METADATA_CF_STR_QUALI_STRING).setSource(JsonUtils.encode(stringMetaData)).execute().actionGet();
         debugInsert(response);
     }
 

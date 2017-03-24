@@ -32,7 +32,7 @@ import com.navercorp.pinpoint.thrift.dto.TSpanChunk;
 import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
 
 /**
- * @author emeroad
+ * @author yangjian
  */
 @Service
 public class EsSpanChunkHandler implements SimpleHandler {

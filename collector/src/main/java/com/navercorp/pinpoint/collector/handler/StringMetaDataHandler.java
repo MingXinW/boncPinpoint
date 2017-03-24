@@ -35,7 +35,7 @@ public class StringMetaDataHandler implements RequestResponseHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private StringMetaDataDao stringMetaDataDao;
+    private StringMetaDataDao hbaseStringMetaDataDao;
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
@@ -51,7 +51,7 @@ public class StringMetaDataHandler implements RequestResponseHandler {
         }
 
         try {
-            stringMetaDataDao.insert(stringMetaData);
+        	hbaseStringMetaDataDao.insert(stringMetaData);
         } catch (Exception e) {
             logger.warn("{} handler error. Caused:{}", this.getClass(), e.getMessage(), e);
             TResult result = new TResult(false);

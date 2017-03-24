@@ -1,15 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.navercorp.pinpoint</groupId>
-    <artifactId>pom</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>es-shade</artifactId>
-  <properties>
-	   <elasticsearch.version>2.4.3</elasticsearch.version>
-	</properties>
- <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>my.elasticsearch</groupId>
+    <artifactId>es-shade</artifactId>
+    <version>1.0</version>
+    
+    <packaging>jar</packaging>
+    <properties>
+        <elasticsearch.version>2.4.3</elasticsearch.version>
+    </properties>
+    <dependencies>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
@@ -78,5 +79,4 @@
             </snapshots>
         </repository>
     </repositories>
-</project>
 </project>

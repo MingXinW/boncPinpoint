@@ -16,6 +16,14 @@
 
 package com.navercorp.pinpoint.collector.dao.hbase;
 
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
+
 import com.navercorp.pinpoint.collector.dao.SqlMetaDataDao;
 import com.navercorp.pinpoint.common.bo.SqlMetaDataBo;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
@@ -23,17 +31,10 @@ import com.navercorp.pinpoint.common.hbase.HbaseOperations2;
 import com.navercorp.pinpoint.thrift.dto.TSqlMetaData;
 import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix;
 
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 /**
  * @author minwoo.jung
  */
-//@Repository
+@Repository
 public class HbaseSqlMetaDataDao implements SqlMetaDataDao {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

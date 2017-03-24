@@ -23,32 +23,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
+import com.navercorp.pinpoint.collector.dao.SqlMetaDataDao;
 import com.navercorp.pinpoint.collector.util.EsTables;
 import com.navercorp.pinpoint.collector.util.JsonUtils;
-import com.navercorp.pinpoint.thrift.dto.TSpan;
+import com.navercorp.pinpoint.thrift.dto.TSqlMetaData;
 
 /**
- * 
  * @author yangjian
  */
 @Repository
-public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
-	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-	@Autowired  
+public class EsSqlMetaDataDao implements SqlMetaDataDao {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
     private Client client;
-    
+
+
     @Override
-    public void insert(final TSpan span) {
-        if (span == null) {
-            throw new NullPointerException("span must not be null");
+    public void insert(TSqlMetaData sqlMetaData) {
+        if (sqlMetaData == null) {
+            throw new NullPointerException("sqlMetaData must not be null");
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("insert:{}", span);
+            logger.debug("insert:{}", sqlMetaData);
         }
-        IndexResponse response = client.prepareIndex(EsTables.APPLICATION_TRACE_INDEX,EsTables.APPLICATION_TRACE_INDEX_CF_TRACE).setSource(JsonUtils.encode(span)).execute().actionGet();
+        IndexResponse response = client.prepareIndex(EsTables.SQL_METADATA_VER2,EsTables.SQL_METADATA_VER2_CF_SQL_QUALI_SQLSTATEMENT).setSource(JsonUtils.encode(sqlMetaData)).execute().actionGet();
         debugInsert(response);
     }
 
@@ -60,5 +60,6 @@ public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
         boolean created = response.isCreated();  
         logger.debug("EsTraceDao insert:"+index+","+type+","+id+","+version+","+created);  
     }
+
 
 }

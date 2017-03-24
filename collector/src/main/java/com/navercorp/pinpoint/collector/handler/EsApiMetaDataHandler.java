@@ -16,42 +16,46 @@
 
 package com.navercorp.pinpoint.collector.handler;
 
+import com.navercorp.pinpoint.collector.dao.ApiMetaDataDao;
+import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
+import com.navercorp.pinpoint.thrift.dto.TResult;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.navercorp.pinpoint.collector.dao.SqlMetaDataDao;
-import com.navercorp.pinpoint.thrift.dto.TResult;
-import com.navercorp.pinpoint.thrift.dto.TSqlMetaData;
-
 /**
- * @author emeroad
+ * @author yangjian
  */
 @Service
-public class SqlMetaDataHandler implements RequestResponseHandler {
+public class EsApiMetaDataHandler implements RequestResponseHandler {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private SqlMetaDataDao hbaseSqlMetaDataDao;
+    private ApiMetaDataDao hbaseApiMetaDataDao;
+    @Autowired
+    private ApiMetaDataDao esApiMetaDataDao;
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
-        if (!(tbase instanceof TSqlMetaData)) {
+        if (!(tbase instanceof TApiMetaData)) {
             logger.error("invalid tbase:{}", tbase);
             return null;
         }
 
-        final TSqlMetaData sqlMetaData = (TSqlMetaData) tbase;
+        TApiMetaData apiMetaData = (TApiMetaData) tbase;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Received SqlMetaData:{}", sqlMetaData);
+        // Because api meta data is important , logging it at info level.
+        if (logger.isInfoEnabled()) {
+            logger.info("Received ApiMetaData={}", apiMetaData);
         }
 
-
         try {
-        	hbaseSqlMetaDataDao.insert(sqlMetaData);
+        	hbaseApiMetaDataDao.insert(apiMetaData);
+        	esApiMetaDataDao.insert(apiMetaData);
         } catch (Exception e) {
             logger.warn("{} handler error. Caused:{}", this.getClass(), e.getMessage(), e);
             TResult result = new TResult(false);
@@ -59,9 +63,5 @@ public class SqlMetaDataHandler implements RequestResponseHandler {
             return result;
         }
         return new TResult(true);
-    }
-    
-    public void setSqlMetaDataDao(SqlMetaDataDao sqlMetaDataDao) {
-        this.hbaseSqlMetaDataDao = sqlMetaDataDao;
     }
 }

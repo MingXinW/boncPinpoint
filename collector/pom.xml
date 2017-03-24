@@ -18,9 +18,9 @@
     
     <dependencies>
     	<dependency>
-		    <groupId>com.navercorp.pinpoint</groupId>
+		     <groupId>my.elasticsearch</groupId>
 		    <artifactId>es-shade</artifactId>
-		    <version>${project.version}</version>
+		    <version>1.0</version>
 		    <exclusions>
 		        <exclusion>
 		            <groupId>org.elasticsearch</groupId>

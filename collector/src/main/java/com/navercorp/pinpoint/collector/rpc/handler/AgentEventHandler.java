@@ -56,7 +56,7 @@ public class AgentEventHandler {
     private Executor executor;
 
     @Resource
-    private AgentEventDao agentEventDao;
+    private AgentEventDao hbaseAgentEventDao;
 
     @Resource
     private AgentEventMessageSerializer agentEventMessageSerializer;
@@ -126,7 +126,7 @@ public class AgentEventHandler {
                 return;
             }
             logger.info("handle event: {}", event);
-            agentEventDao.insert(event);
+            hbaseAgentEventDao.insert(event);
         }
 
     }
@@ -162,7 +162,7 @@ public class AgentEventHandler {
                     AgentEventBo agentEventBo = new AgentEventBo(this.agentId, this.startTimestamp,
                             this.eventTimestamp, eventType);
                     agentEventBo.setEventBody(this.payload);
-                    agentEventDao.insert(agentEventBo);
+                    hbaseAgentEventDao.insert(agentEventBo);
                 }
             }
         }

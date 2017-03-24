@@ -16,9 +16,13 @@
 
 package com.navercorp.pinpoint.collector.dao.es;
 
+import static com.navercorp.pinpoint.common.hbase.HBaseTables.TRACES;
+import static com.navercorp.pinpoint.common.hbase.HBaseTables.TRACES_CF_TERMINALSPAN;
+
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.hadoop.hbase.client.Put;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
@@ -32,6 +36,8 @@ import com.navercorp.pinpoint.collector.util.EsTables;
 import com.navercorp.pinpoint.collector.util.JsonUtils;
 import com.navercorp.pinpoint.common.bo.SpanBo;
 import com.navercorp.pinpoint.common.bo.SpanEventBo;
+import com.navercorp.pinpoint.common.util.BytesUtils;
+import com.navercorp.pinpoint.common.util.SpanUtils;
 import com.navercorp.pinpoint.thrift.dto.TAnnotation;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 import com.navercorp.pinpoint.thrift.dto.TSpanChunk;
@@ -93,8 +99,16 @@ public class EsTraceDao implements TracesDao{
     	if (spanChunk == null) {
             throw new NullPointerException("spanChunk must not be null");
         }
-        logger.debug("esTraceDao insertSpanChunk"+spanChunk.toString());
-
+        final List<TSpanEvent> spanEventBoList = spanChunk.getSpanEventList();
+        if (CollectionUtils.isNotEmpty(spanEventBoList)) {
+        	for (TSpanEvent spanEvent : spanEventBoList) {
+                SpanEventBo spanEventBo = new SpanEventBo(spanChunk, spanEvent);
+                if (spanEventFilter.filter(spanEventBo)) {
+                	IndexResponse response = client.prepareIndex(EsTables.TRACES,EsTables.TRACES_CF_TERMINALSPAN).setSource(JsonUtils.encode(spanEventBo)).execute().actionGet();
+                	debugInsert(response);
+                }
+            }
+        }
     }
 
 }
