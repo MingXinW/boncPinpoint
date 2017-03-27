@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkDataMap;
+import com.navercorp.pinpoint.web.dao.AgentInfoDao;
 import com.navercorp.pinpoint.web.dao.hbase.HbaseMapResponseTimeDao;
 import com.navercorp.pinpoint.web.dao.hbase.HbaseMapStatisticsCalleeDao;
 import com.navercorp.pinpoint.web.scatter.ScatterData;
 import com.navercorp.pinpoint.web.service.ApplicationFactory;
 import com.navercorp.pinpoint.web.service.ScatterChartService;
 import com.navercorp.pinpoint.web.util.LimitUtils;
+import com.navercorp.pinpoint.web.vo.AgentInfo;
 import com.navercorp.pinpoint.web.vo.Application;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.ResponseTime;
@@ -50,6 +52,9 @@ public class MapStatController {
     private HbaseMapStatisticsCalleeDao mapStatisticsCalleeDao;
     
     @Autowired
+    private AgentInfoDao agentInfoDao;
+    
+    @Autowired
     private ScatterChartService scatter;
     
     
@@ -68,15 +73,15 @@ public class MapStatController {
         return hbaseMapResponseTimeDao.selectResponseTime(application, range);
     }
     
-    @RequestMapping(value = "/getMapCallee", method = RequestMethod.GET, params="serviceTypeName")
+    @RequestMapping(value = "/getMapCallee", method = RequestMethod.GET)
     @ResponseBody
-    public LinkDataMap getMapCallee(
-    								          @RequestParam("applicationName") String applicationName,
-    								          @RequestParam("serviceTypeName") String serviceTypeName,
-    								          @RequestParam("from") long from,
-    								          @RequestParam("to") long to) {
+    public LinkDataMap getMapCallee(@RequestParam("application") String applicationName,
+    								@RequestParam("from") long from,
+    								@RequestParam("to") long to) {
         final Range range = new Range(from, to);
-        Application application = applicationFactory.createApplicationByTypeName(applicationName, serviceTypeName);
+        
+        AgentInfo agentInfo = agentInfoDao.getInitialAgentInfo(applicationName);
+        Application application = applicationFactory.createApplication(applicationName, agentInfo.getServiceTypeCode());
         
         logger.debug("getMapCallee() application:{} range:{}", application, range);
         
@@ -91,7 +96,7 @@ public class MapStatController {
             @RequestParam("to") long to,
             @RequestParam(value = "xGroupUnit", required = false, defaultValue = "1") int xGroupUnit,
             @RequestParam(value = "yGroupUnit", required = false, defaultValue = "1") int yGroupUnit,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "limit", required = false, defaultValue = "5000") int limit,
             @RequestParam(value = "backwardDirection", required = false, defaultValue = "true") boolean backwardDirection) {
         limit = LimitUtils.checkRange(limit);
         StopWatch watch = new StopWatch();
