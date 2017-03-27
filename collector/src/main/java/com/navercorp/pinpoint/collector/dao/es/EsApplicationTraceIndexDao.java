@@ -16,6 +16,11 @@
 
 package com.navercorp.pinpoint.collector.dao.es;
 
+import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_NAME_MAX_LEN;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
@@ -26,6 +31,8 @@ import org.springframework.stereotype.Repository;
 import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
 import com.navercorp.pinpoint.collector.util.EsTables;
 import com.navercorp.pinpoint.collector.util.JsonUtils;
+import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
+import com.navercorp.pinpoint.common.buffer.Buffer;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 
 /**
@@ -48,7 +55,12 @@ public class EsApplicationTraceIndexDao implements ApplicationTraceIndexDao {
         if (logger.isDebugEnabled()) {
             logger.debug("insert:{}", span);
         }
-        IndexResponse response = client.prepareIndex(EsTables.APPLICATION_TRACE_INDEX,EsTables.APPLICATION_TRACE_INDEX_CF_TRACE).setSource(JsonUtils.encode(span)).execute().actionGet();
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("elapsed", span.getElapsed());
+        map.put("err", span.getErr());
+        map.put("agentId", span.getAgentId());
+        
+        IndexResponse response = client.prepareIndex(EsTables.APPLICATION_TRACE_INDEX,EsTables.APPLICATION_TRACE_INDEX_CF_TRACE).setSource(JsonUtils.encode(map)).execute().actionGet();
         debugInsert(response);
     }
 

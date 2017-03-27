@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.collector.dao.es;
 
 import static com.navercorp.pinpoint.common.hbase.HBaseTables.MAP_STATISTICS_CALLER_VER2_CF_COUNTER;
 
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
@@ -93,6 +94,9 @@ public class EsMapStatisticsCalleeDao implements MapStatisticsCalleeDao {
             logger.debug("[Callee] {} ({}) <- {} ({})[{}]",
                     calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost);
         }
+        // there may be no endpoint in case of httpclient
+        callerHost = StringUtils.defaultString(callerHost);
+        
         short callerSlotNumber = ApplicationMapStatisticsUtils.getSlotNumber(calleeServiceType, elapsed, isError);
         CallerColumnName callerColumnName = new CallerColumnName(callerServiceType.getCode(), callerApplicationName, callerHost, callerSlotNumber);
         IndexResponse response = client.prepareIndex(EsTables.MAP_STATISTICS_CALLER_VER2,EsTables.MAP_STATISTICS_CALLER_VER2_CF_COUNTER).setSource(JsonUtils.encode(callerColumnName)).execute().actionGet();
