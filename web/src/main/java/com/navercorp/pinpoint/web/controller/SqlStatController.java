@@ -204,11 +204,12 @@ public class SqlStatController {
 			AnnotationBo sqlIdAnnotation = findAnnotation(span.getAnnotationBoList(), AnnotationKey.SQL.getCode());
 			sql.put("sql", sqlIdAnnotation.getValue());
 			sql.put("cost", span.getElapsed());
-			sql.put("traceId", span.getTransactionId());
+			sql.put("traceId", span.getSpanBo().getTransactionId());
+			sql.put("path", span.getSpanBo().getRpc());
 			sql.put("collectorAcceptTime", span.getSpanBo().getCollectorAcceptTime());
-			sql.put("startTime", span.getStartTime());
-			sql.put("agentId", span.getAgentId());
-			sql.put("remoteAddr", span.getRemoteAddr());
+			sql.put("startTime", span.getSpanBo().getStartTime());
+			sql.put("agentId", span.getSpanBo().getAgentId());
+			sql.put("remoteAddr", span.getSpanBo().getRemoteAddr());
 			sql.put("endPoint", span.getSpanBo().getEndPoint());
 			sql.put("exception", span.getExceptionMessage());
 
