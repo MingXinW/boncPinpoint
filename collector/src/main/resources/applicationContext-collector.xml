@@ -18,12 +18,21 @@
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.hbase,
-            			com.navercorp.pinpoint.collector.dao.es,
                         com.navercorp.pinpoint.collector.handler,
                         com.navercorp.pinpoint.collector.manage,
                         com.navercorp.pinpoint.collector.mapper,
                         com.navercorp.pinpoint.collector.util,
                         com.navercorp.pinpoint.collector.config" />
+                        
+    <!-- es bean -->
+    <!-- <context:component-scan
+            base-package="com.navercorp.pinpoint.collector.dao.hbase,
+            			com.navercorp.pinpoint.collector.dao.es,
+                        com.navercorp.pinpoint.collector.handler,
+                        com.navercorp.pinpoint.collector.manage,
+                        com.navercorp.pinpoint.collector.mapper,
+                        com.navercorp.pinpoint.collector.util,
+                        com.navercorp.pinpoint.collector.config" /> -->
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -43,7 +52,8 @@
     </bean>
 
     <import resource="classpath:applicationContext-hbase.xml"/>
-    <import resource="classpath:applicationContext-es.xml"/>
+    <!-- es config -->
+    <!-- <import resource="classpath:applicationContext-es.xml"/> -->
 
     <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
     	<beans:property name="cachedStatisticsDaoList">
@@ -81,19 +91,19 @@
     <bean id="tcpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.TcpDispatchHandler"/>
     <bean id="esTcpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.EsTcpDispatchHandler"/>
     <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerWrapper">
-    	<constructor-arg ref="esTcpDispatchHandler"/><!-- es turn on off -->
+    	<constructor-arg ref="tcpDispatchHandler"/><!-- es turn on off -->
     </bean>
     
     <bean id="udpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.UdpDispatchHandler"/>
     <bean id="esUdpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.EsUdpDispatchHandler"/>
     <bean id="udpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerWrapper">
-    	<constructor-arg ref="esUdpDispatchHandler"/><!-- es turn on off -->
+    	<constructor-arg ref="udpDispatchHandler"/><!-- es turn on off -->
     </bean>
 
     <bean id="udpSpanDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.UdpSpanDispatchHandler"/>
     <bean id="esUdpSpanDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.EsUdpSpanDispatchHandler"/>
     <bean id="udpSpanDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerWrapper">
-    	<constructor-arg ref="esUdpSpanDispatchHandler"/><!-- es turn on off -->
+    	<constructor-arg ref="udpSpanDispatchHandler"/><!-- es turn on off -->
     </bean>
 
     <!-- Serializer Factory Beans -->
@@ -282,12 +292,6 @@
         <constructor-arg ref="typeLoaderService"/>
     </bean>
     
-<!--     <bean id="sqlMetaDataHandler" class="com.navercorp.pinpoint.collector.handler.SqlMetaDataHandler">
-        <property name="sqlMetaDataDao" ref="hbaseSqlMetaDataDao"/>
-    </bean>
-    
-    <bean id="hbaseSqlMetaDataDao" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseSqlMetaDataDao"/> -->
-
     <bean id="sequenceSpanEventFilter" class="com.navercorp.pinpoint.collector.dao.hbase.filter.SequenceSpanEventFilter">
         <constructor-arg index="0" value="${collector.spanEvent.sequence.limit:10000}"/>
     </bean>
