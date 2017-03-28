@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +75,22 @@ public class SqlStatController {
 
 	private static final int DEFAULT_MAX_SEARCH_DEPTH = 8;
 
+	private static final int DEFAULT_PERIOD = 300000;
+
+	private static final String FUZZY_QUERY_SUFFIX = "_*";
+
 	@RequestMapping(value = "/getTopSlowSqls", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map> getTopSlowSql(@RequestParam("period") long period, @RequestParam("limit") int limit) {
-		long to = TimeUtils.getDelayLastTime();
-		long from = to - period;
+	public List<Map> getTopSlowSql(@RequestParam("application") String applicationName,
+			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
+			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
+			@RequestParam(value = "limit", required = false, defaultValue = "10000") int limit) {
+		if (from == 0 && to == 0) {
+			to = TimeUtils.getDelayLastTime();
+			from = to - DEFAULT_PERIOD;
+		}
+		if (StringUtils.isEmpty(applicationName))
+			throw new NullPointerException("applicationName must not be empty");
 
 		final Range range = new Range(from, to);
 		this.dateLimit.limit(range);
@@ -87,7 +99,18 @@ public class SqlStatController {
 
 		SearchOption searchOption = new SearchOption(DEFAULT_MAX_SEARCH_DEPTH, DEFAULT_MAX_SEARCH_DEPTH);
 
-		List<Application> apps = commonService.selectAllApplicationNames();
+		List<Application> apps = null;
+		List<Application> allApps = commonService.selectAllApplicationNames();
+		if (applicationName.endsWith(FUZZY_QUERY_SUFFIX)) {
+			apps = filterApps(allApps, applicationName.substring(0, applicationName.length()-1));
+		} else {
+			apps = findAppsByName(allApps, applicationName);
+		}
+
+		if (apps == null || apps.size() == 0) {
+			logger.info("can not find apps by appname:{}", applicationName);
+			return null;
+		}
 		logger.info("application count is {}.", apps.size());
 
 		for (Application app : apps) {
@@ -96,7 +119,7 @@ public class SqlStatController {
 
 			ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, 10000, true);
 			List<QueryCondition> query = parseTransaction(scatterData);
-			//Map<String, SpanAlign> sqlSpanMap = new HashMap<String, SpanAlign>();
+
 			if (query.size() > 0) {
 				for (QueryCondition queryCondition : query) {
 
@@ -110,11 +133,47 @@ public class SqlStatController {
 					findSlowSqlSpan(callTreeIterator, sqlSpanList);
 
 				}
-			/*	if (!sqlSpanMap.isEmpty())
-					sqlSpanList.addAll(sqlSpanMap.values());*/
+
 			}
 		}
 		return chooseLimitedSlowSqls(sqlSpanList, limit);
+	}
+
+	/**
+	 * 根据applicationName 查找Application
+	 * 
+	 * @param allApps
+	 * @param applicationName
+	 * @return
+	 */
+	private List<Application> findAppsByName(List<Application> allApps, String applicationName) {
+
+		List<Application> apps = new ArrayList<Application>();
+		for (Application app : allApps) {
+			if (applicationName.equals(app.getName())) {
+				apps.add(app);
+				break;
+			}
+		}
+		return apps;
+	}
+
+	/**
+	 * 通过前缀 查找Application
+	 * 
+	 * @param allApps
+	 * @param suffix
+	 * @return
+	 */
+	private List<Application> filterApps(List<Application> allApps, String suffix) {
+
+		List<Application> apps = new ArrayList<Application>();
+		for (Application app : allApps) {
+			if (app.getName().startsWith(suffix)) {
+				apps.add(app);
+			}
+		}
+		return apps;
 	}
 
 	/**
@@ -145,20 +204,26 @@ public class SqlStatController {
 			AnnotationBo sqlIdAnnotation = findAnnotation(span.getAnnotationBoList(), AnnotationKey.SQL.getCode());
 			sql.put("sql", sqlIdAnnotation.getValue());
 			sql.put("cost", span.getElapsed());
-			sql.put("TransactionId", span.getTransactionId());
+			sql.put("traceId", span.getTransactionId());
+			sql.put("collectorAcceptTime", span.getSpanBo().getCollectorAcceptTime());
 			sql.put("startTime", span.getStartTime());
+			sql.put("agentId", span.getAgentId());
+			sql.put("remoteAddr", span.getRemoteAddr());
+			sql.put("endPoint", span.getSpanBo().getEndPoint());
+			sql.put("exception", span.getExceptionMessage());
+
 			topApis.add(sql);
 		}
 		return topApis;
 	}
 
 	/**
-	 * 找到慢sql的spanAlign 
+	 * 找到慢sql的spanAlign
 	 * 
 	 * @param callTreeIterator
 	 * @param sqlSpanMap
 	 */
-	private void findSlowSqlSpan(CallTreeIterator callTreeIterator, List<SpanAlign> sqlSpanList ) {
+	private void findSlowSqlSpan(CallTreeIterator callTreeIterator, List<SpanAlign> sqlSpanList) {
 
 		while (callTreeIterator.hasNext()) {
 			final CallTreeNode node = callTreeIterator.next();
@@ -171,13 +236,12 @@ public class SqlStatController {
 				List<AnnotationBo> annotationBoList = align.getAnnotationBoList();
 				AnnotationBo sqlIdAnnotation = findAnnotation(annotationBoList, AnnotationKey.SQL.getCode());
 
-				
 				if (sqlIdAnnotation != null) {
 					sqlSpanList.add(align);
 				}
 			}
 		}
-		
+
 	}
 
 	/**

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,19 +65,39 @@ public class ApiStatController {
 
 	private static final int DEFAULT_MAX_SEARCH_DEPTH = 8;
 
+	private static final int DEFAULT_PERIOD = 300000;
+
+	private static final String FUZZY_QUERY_SUFFIX = "_*";
+
 	@RequestMapping(value = "/getTopSlowApis", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map> getTopSlowApis(@RequestParam("period") long period, @RequestParam("limit") int limit) {
-
-		long to = TimeUtils.getDelayLastTime();
-		long from = to - period;
-
+	public List<Map> getTopSlowApis(@RequestParam("application") String applicationName,
+			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
+			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
+			@RequestParam(value = "limit", required = false, defaultValue = "10000") int limit) {
+		if (from == 0 && to == 0) {
+			to = TimeUtils.getDelayLastTime();
+			from = to - DEFAULT_PERIOD;
+		}
+		if (StringUtils.isEmpty(applicationName))
+			throw new NullPointerException("applicationName must not be empty");
 		final Range range = Range.createUncheckedRange(from, to);
 		this.dateLimit.limit(range);
 
 		SearchOption searchOption = new SearchOption(DEFAULT_MAX_SEARCH_DEPTH, DEFAULT_MAX_SEARCH_DEPTH);
 
-		List<Application> apps = commonService.selectAllApplicationNames();
+		List<Application> apps = null;
+		List<Application> allApps = commonService.selectAllApplicationNames();
+		if (applicationName.endsWith(FUZZY_QUERY_SUFFIX)) {
+			apps = filterApps(allApps, applicationName.substring(0, applicationName.length()-1));
+		} else {
+			apps = findAppsByName(allApps, applicationName);
+		}
+
+		if (apps == null || apps.size() == 0) {
+			logger.info("can not find apps by appname:{}", applicationName);
+			return null;
+		}
 		logger.info("application count is {}.", apps.size());
 
 		List<SpanBo> allSlowSpans = new ArrayList<SpanBo>();
@@ -100,6 +121,43 @@ public class ApiStatController {
 		}
 
 		return chooseLimitedSlowApis(allSlowSpans, limit);
+	}
+
+	/**
+	 * 根据applicationName 查找Application
+	 * 
+	 * @param allApps
+	 * @param applicationName
+	 * @return
+	 */
+	private List<Application> findAppsByName(List<Application> allApps, String applicationName) {
+
+		List<Application> apps = new ArrayList<Application>();
+		for (Application app : allApps) {
+			if (applicationName.equals(app.getName())) {
+				apps.add(app);
+				break;
+			}
+		}
+		return apps;
+	}
+
+	/**
+	 * 通过前缀 查找Application
+	 * 
+	 * @param allApps
+	 * @param suffix
+	 * @return
+	 */
+	private List<Application> filterApps(List<Application> allApps, String suffix) {
+
+		List<Application> apps = new ArrayList<Application>();
+		for (Application app : allApps) {
+			if (app.getName().startsWith(suffix)) {
+				apps.add(app);
+			}
+		}
+		return apps;
 	}
 
 	/**
@@ -129,8 +187,14 @@ public class ApiStatController {
 			api.put("applicationName", span.getApplicationId());
 			api.put("path", span.getRpc());
 			api.put("cost", span.getElapsed());
-			api.put("TransactionId", span.getTransactionId());
+			api.put("traceId", span.getTransactionId());
+			api.put("collectorAcceptTime", span.getCollectorAcceptTime());
 			api.put("startTime", span.getStartTime());
+			api.put("agentId", span.getAgentId());
+			api.put("remoteAddr", span.getRemoteAddr());
+			api.put("endPoint", span.getEndPoint());
+			api.put("exception", span.getExceptionMessage());
+
 			topApis.add(api);
 		}
 		return topApis;
@@ -233,22 +297,22 @@ public class ApiStatController {
 			for (Dot dot : dotSet) {
 
 				int agentId = metadata.getId(dot);
-				
+
 				String transactionId = "";
-				if(agentId == -1 ){
-					transactionId =  dot.getTransactionIdAsString();
-				}else{
-					 transactionId = dot.getTransactionId().getAgentId() + "^"
-								+ dot.getTransactionId().getAgentStartTime() + "^"
-							 + dot.getTransactionId().getTransactionSequence();
+				if (agentId == -1) {
+					transactionId = dot.getTransactionIdAsString();
+				} else {
+					transactionId = dot.getTransactionId().getAgentId() + "^"
+							+ dot.getTransactionId().getAgentStartTime() + "^"
+							+ dot.getTransactionId().getTransactionSequence();
 				}
-		
+
 				final long time = dot.getAcceptedTime() + scatterData.getFrom();
 				final int responseTime = dot.getElapsedTime();
 
 				logger.debug("TransactionMetadataQuery:{}", transactionId + "," + time + "," + responseTime);
 
-				query.addQueryCondition(transactionId,time, responseTime);
+				query.addQueryCondition(transactionId, time, responseTime);
 			}
 		}
 		logger.debug("TransactionMetadataQuery:{}", query);
