@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.web.service;
 
+import java.util.List;
+
 import com.navercorp.pinpoint.web.vo.TransactionId;
 
 /**
@@ -23,4 +25,6 @@ import com.navercorp.pinpoint.web.vo.TransactionId;
  */
 public interface SpanService {
     SpanResult selectSpan(TransactionId transactionId, long selectedSpanHint);
+
+	List<SqlSpanResult> selectSqlSpan(TransactionId transactionId, long selectedSpanHint);
 }

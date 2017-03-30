@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,23 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.common.bo.SpanBo;
-import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
-import com.navercorp.pinpoint.web.scatter.DotGroups;
-import com.navercorp.pinpoint.web.scatter.ScatterAgentMetaData;
-import com.navercorp.pinpoint.web.scatter.ScatterData;
 import com.navercorp.pinpoint.web.service.CommonService;
-import com.navercorp.pinpoint.web.service.MapService;
 import com.navercorp.pinpoint.web.service.ScatterChartService;
 import com.navercorp.pinpoint.web.util.LimitUtils;
-import com.navercorp.pinpoint.web.util.Limiter;
 import com.navercorp.pinpoint.web.util.TimeUtils;
 import com.navercorp.pinpoint.web.vo.Application;
-import com.navercorp.pinpoint.web.vo.Range;
-import com.navercorp.pinpoint.web.vo.SearchOption;
+import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
 import com.navercorp.pinpoint.web.vo.TransactionMetadataQuery;
-import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.scatter.Dot;
-import com.navercorp.pinpoint.web.vo.scatter.DotAgentInfo;
 
 /**
  * 
@@ -58,33 +48,29 @@ public class ApiStatController {
 	private CommonService commonService;
 
 	@Autowired
-	private Limiter dateLimit;
-
-	@Autowired
 	private ScatterChartService scatter;
-
-	private static final int DEFAULT_MAX_SEARCH_DEPTH = 8;
-
+	
 	private static final int DEFAULT_PERIOD = 300000;
 
 	private static final String FUZZY_QUERY_SUFFIX = "_*";
+	
+	private static final int MAX_EXEC_TIME = 100000;
 
 	@RequestMapping(value = "/getTopSlowApis", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map> getTopSlowApis(@RequestParam("application") String applicationName,
+	public List<Map<String,Object>> getTopSlowApis(@RequestParam("application") String applicationName,
 			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
 			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
-			@RequestParam(value = "limit", required = false, defaultValue = "10000") int limit) {
+			@RequestParam(value = "execTime", required = false, defaultValue = "5000") int execTime,
+			@RequestParam(value = "limit", required = false, defaultValue = "20") int limit) {
 		if (from == 0 && to == 0) {
 			to = TimeUtils.getDelayLastTime();
 			from = to - DEFAULT_PERIOD;
 		}
 		if (StringUtils.isEmpty(applicationName))
 			throw new NullPointerException("applicationName must not be empty");
-		final Range range = Range.createUncheckedRange(from, to);
-		this.dateLimit.limit(range);
 
-		SearchOption searchOption = new SearchOption(DEFAULT_MAX_SEARCH_DEPTH, DEFAULT_MAX_SEARCH_DEPTH);
+		SelectedScatterArea area = new SelectedScatterArea(from,to,execTime,MAX_EXEC_TIME,true);
 
 		List<Application> apps = null;
 		List<Application> allApps = commonService.selectAllApplicationNames();
@@ -104,18 +90,19 @@ public class ApiStatController {
 
 		for (Application app : apps) {
 
-			logger.info("getServerMap() application:{} range:{} searchOption:{}", app, range, searchOption);
+			logger.info("getServerMap() application:{} area:{} searchOption:{}", apps, area);
 
-			ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, 10000, true);
-
+			/*ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, 10000, true);
+			TransactionMetadataQuery query = parseTransaction(scatterData);*/
+			List<Dot> scatterData = selectScatterData(app.getName(),area,limit * 10);
 			TransactionMetadataQuery query = parseTransaction(scatterData);
 
 			if (query.size() > 0) {
 
 				List<SpanBo> metadata = scatter.selectTransactionMetadata(query);
 				logger.debug("application:{} api span size:{}", app.getName(), metadata.size());
+				
 				List<SpanBo> slowSpans = selectSlowSpans(metadata);
-
 				allSlowSpans.addAll(slowSpans);
 			}
 		}
@@ -167,9 +154,9 @@ public class ApiStatController {
 	 * @param limit
 	 * @return
 	 */
-	private List<Map> chooseLimitedSlowApis(List<SpanBo> apis, int limit) {
+	private List<Map<String,Object>> chooseLimitedSlowApis(List<SpanBo> apis, int limit) {
 
-		List<Map> topApis = new ArrayList<Map>();
+		List<Map<String,Object>> topApis = new ArrayList<Map<String,Object>>();
 		List<SpanBo> limitApis = new ArrayList<SpanBo>();
 
 		sorteSpan(apis);
@@ -252,70 +239,44 @@ public class ApiStatController {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param applicationName
-	 * @param range
-	 * @param xGroupUnit
-	 * @param yGroupUnit
+	 * @param area
 	 * @param limit
-	 * @param backwardDirection
 	 * @return
 	 */
-	private ScatterData getScatterData(String applicationName, Range range, int xGroupUnit, int yGroupUnit, int limit,
-			boolean backwardDirection) {
+	private List<Dot> selectScatterData(String applicationName, SelectedScatterArea area,int limit){
 		limit = LimitUtils.checkRange(limit);
 		StopWatch watch = new StopWatch();
 		watch.start("getScatterData");
 		logger.debug(
-				"getScatterData() fetch scatter data. RANGE={}, X-Group-Unit:{}, Y-Group-Unit:{}, LIMIT={}, BACKWARD_DIRECTION:{}",
-				range, xGroupUnit, yGroupUnit, limit, backwardDirection);
-		ScatterData scatterData = scatter.selectScatterData(applicationName, range, xGroupUnit, yGroupUnit, limit,
-				backwardDirection);
+				"selectScatterData() fetch scatter data. applicationName={}, LIMIT={}, AREA:{}",applicationName, limit, area);
+		 List<Dot> scatterData = scatter.selectScatterData(applicationName, area, null, 0, limit);
 		watch.stop();
 		logger.info("Fetch scatterData time : {}ms", watch.getLastTaskTimeMillis());
 		return scatterData;
 	}
-
 	/**
 	 * 组织span查询条件
 	 * 
 	 * @param scatterData
 	 * @return
 	 */
-	private TransactionMetadataQuery parseTransaction(ScatterData scatterData) {
+	private TransactionMetadataQuery parseTransaction(List<Dot> scatterData) {
 
 		final TransactionMetadataQuery query = new TransactionMetadataQuery();
 
-		ScatterAgentMetaData metadata = scatterData.getScatterAgentMetadata();
-		Map<Long, DotGroups> sortedScatterDataMap = scatterData.getSortedScatterDataMap();
-
-		for (Map.Entry<Long, DotGroups> entry : sortedScatterDataMap.entrySet()) {
-
-			DotGroups dotGroups = entry.getValue();
-			Set<Dot> dotSet = dotGroups.getSortedDotSet();
-
-			for (Dot dot : dotSet) {
-
-				int agentId = metadata.getId(dot);
-
-				String transactionId = "";
-				if (agentId == -1) {
-					transactionId = dot.getTransactionIdAsString();
-				} else {
-					transactionId = dot.getTransactionId().getAgentId() + "^"
-							+ dot.getTransactionId().getAgentStartTime() + "^"
-							+ dot.getTransactionId().getTransactionSequence();
-				}
-
-				final long time = dot.getAcceptedTime() + scatterData.getFrom();
+			for (Dot dot : scatterData) {
+				
+				String transactionId = dot.getTransactionIdAsString();
+				final long time = dot.getAcceptedTime();
 				final int responseTime = dot.getElapsedTime();
 
 				logger.debug("TransactionMetadataQuery:{}", transactionId + "," + time + "," + responseTime);
 
 				query.addQueryCondition(transactionId, time, responseTime);
 			}
-		}
-		logger.debug("TransactionMetadataQuery:{}", query);
+	
 		return query;
 	}
 
