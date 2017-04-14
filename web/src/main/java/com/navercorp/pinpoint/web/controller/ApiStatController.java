@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.common.bo.SpanBo;
+import com.navercorp.pinpoint.web.scatter.ScatterData;
 import com.navercorp.pinpoint.web.service.CommonService;
 import com.navercorp.pinpoint.web.service.ScatterChartService;
 import com.navercorp.pinpoint.web.util.LimitUtils;
 import com.navercorp.pinpoint.web.util.TimeUtils;
 import com.navercorp.pinpoint.web.vo.Application;
+import com.navercorp.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.vo.SearchOption;
 import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
 import com.navercorp.pinpoint.web.vo.TransactionMetadataQuery;
 import com.navercorp.pinpoint.web.vo.scatter.Dot;
@@ -104,6 +107,112 @@ public class ApiStatController {
 				
 				List<SpanBo> slowSpans = selectSlowSpans(metadata);
 				allSlowSpans.addAll(slowSpans);
+			}
+		}
+
+		return chooseLimitedSlowApis(allSlowSpans, limit);
+	}
+
+	@RequestMapping(value = "/getUnsuccessTraces", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Map<String,Object>> getUnsuccessTraces(@RequestParam("application") String applicationName,
+			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
+			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
+			@RequestParam(value = "limit", required = false, defaultValue = "10000") int limit) {
+		if (from == 0 && to == 0) {
+			to = TimeUtils.getDelayLastTime();
+			from = to - DEFAULT_PERIOD;
+		}
+		if (StringUtils.isEmpty(applicationName))
+			throw new NullPointerException("applicationName must not be empty");
+
+		SelectedScatterArea area = new SelectedScatterArea(from,to,0,MAX_EXEC_TIME,true);
+
+		List<Application> apps = null;
+		List<Application> allApps = commonService.selectAllApplicationNames();
+		if (applicationName.endsWith(FUZZY_QUERY_SUFFIX)) {
+			apps = filterApps(allApps, applicationName.substring(0, applicationName.length()-1));
+		} else {
+			apps = findAppsByName(allApps, applicationName);
+		}
+
+		if (apps == null || apps.size() == 0) {
+			logger.info("can not find apps by appname:{}", applicationName);
+			return null;
+		}
+		logger.info("application count is {}.", apps.size());
+
+		List<SpanBo> allSlowSpans = new ArrayList<SpanBo>();
+
+		for (Application app : apps) {
+
+			logger.info("getServerMap() application:{} area:{} searchOption:{}", apps, area);
+
+			/*ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, 10000, true);
+			TransactionMetadataQuery query = parseTransaction(scatterData);*/
+			List<Dot> scatterData = selectScatterData(app.getName(),area,limit * 10);
+			
+			TransactionMetadataQuery query = parseUnsuccessTransaction(scatterData);
+
+			if (query.size() > 0) {
+
+				List<SpanBo> metadata = scatter.selectTransactionMetadata(query);
+				logger.debug("application:{} api span size:{}", app.getName(), metadata.size());
+				
+				List<SpanBo> unsuccessSpans = selectSlowSpans(metadata);
+				allSlowSpans.addAll(unsuccessSpans);
+			}
+		}
+
+		return chooseLimitedSlowApis(allSlowSpans, limit);
+	}
+
+	@RequestMapping(value = "/getTraces", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Map<String,Object>> getTraces(@RequestParam("application") String applicationName,
+			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
+			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
+			@RequestParam(value = "limit", required = false, defaultValue = "3000") int limit) {
+		if (from == 0 && to == 0) {
+			to = TimeUtils.getDelayLastTime();
+			from = to - DEFAULT_PERIOD;
+		}
+		if (StringUtils.isEmpty(applicationName))
+			throw new NullPointerException("applicationName must not be empty");
+
+		SelectedScatterArea area = new SelectedScatterArea(from,to,0,MAX_EXEC_TIME,true);
+
+		List<Application> apps = null;
+		List<Application> allApps = commonService.selectAllApplicationNames();
+		if (applicationName.endsWith(FUZZY_QUERY_SUFFIX)) {
+			apps = filterApps(allApps, applicationName.substring(0, applicationName.length()-1));
+		} else {
+			apps = findAppsByName(allApps, applicationName);
+		}
+
+		if (apps == null || apps.size() == 0) {
+			logger.info("can not find apps by appname:{}", applicationName);
+			return null;
+		}
+		logger.info("application count is {}.", apps.size());
+
+		List<SpanBo> allSlowSpans = new ArrayList<SpanBo>();
+
+		for (Application app : apps) {
+
+			logger.info("getServerMap() application:{} area:{} searchOption:{}", apps, area);
+
+			/*ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, 10000, true);
+			TransactionMetadataQuery query = parseTransaction(scatterData);*/
+			List<Dot> scatterData = selectScatterData(app.getName(),area,limit * 10);
+			TransactionMetadataQuery query = parseTransaction(scatterData);
+
+			if (query.size() > 0) {
+
+				List<SpanBo> metadata = scatter.selectTransactionMetadata(query);
+				logger.debug("application:{} api span size:{}", app.getName(), metadata.size());
+				
+				allSlowSpans.addAll(metadata);
 			}
 		}
 
@@ -267,6 +376,33 @@ public class ApiStatController {
 		final TransactionMetadataQuery query = new TransactionMetadataQuery();
 
 			for (Dot dot : scatterData) {
+				
+				String transactionId = dot.getTransactionIdAsString();
+				final long time = dot.getAcceptedTime();
+				final int responseTime = dot.getElapsedTime();
+
+				logger.debug("TransactionMetadataQuery:{}", transactionId + "," + time + "," + responseTime);
+
+				query.addQueryCondition(transactionId, time, responseTime);
+			}
+	
+		return query;
+	}
+	/**
+	 * 组织span查询条件
+	 * 
+	 * @param scatterData
+	 * @return
+	 */
+	private TransactionMetadataQuery parseUnsuccessTransaction(List<Dot> scatterData) {
+
+		final TransactionMetadataQuery query = new TransactionMetadataQuery();
+
+			for (Dot dot : scatterData) {
+				
+				if(dot.getSimpleExceptionCode() == Dot.SUCCESS_STATE){
+					continue;
+				}
 				
 				String transactionId = dot.getTransactionIdAsString();
 				final long time = dot.getAcceptedTime();

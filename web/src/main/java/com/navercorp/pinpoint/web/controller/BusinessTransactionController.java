@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.web.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -108,6 +109,29 @@ public class BusinessTransactionController {
 
         TransactionInfoViewModel result = new TransactionInfoViewModel(traceId, map.getNodes(), map.getLinks(), recordSet, spanResult.getCompleteTypeString(), logLinkEnable, logButtonName, logPageUrl, disableButtonMessage);
         return result;
+    }
+
+    /**
+     * info lookup for selected transactions
+     *
+     * @param traceIdsParam
+     * @param focusTimestamp
+     * @return
+     */
+    @RequestMapping(value = "/transactionInfoList", method = RequestMethod.GET)
+    @ResponseBody
+    public List<TransactionInfoViewModel> transactionInfoList(@RequestParam("traceIds") String traceIdsParam,
+                                        @RequestParam(value = "focusTimestamp", required = false, defaultValue = "0") long focusTimestamp,
+                                        @RequestParam(value = "v", required = false, defaultValue = "0") int viewVersion,
+                                        HttpServletResponse response) {
+        logger.debug("traceIds:{}", traceIdsParam);
+        String[] ids = traceIdsParam.split(",");
+        List<TransactionInfoViewModel> viewModels = new ArrayList<TransactionInfoViewModel>();
+        for(int i=0; i<ids.length; i++){
+        	viewModels.add(transactionInfo(ids[i], focusTimestamp, viewVersion, response));
+        }
+
+        return viewModels;
     }
 
     @RequestMapping(value = "/sqlBind", method = RequestMethod.POST)
