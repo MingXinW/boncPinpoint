@@ -46,8 +46,30 @@ public class SpanAligner2 {
     private int matchType = FAIL_MATCH;
 
     public SpanAligner2(List<SpanBo> spans, long collectorAcceptTime) {
-        this.spanIdMap = buildSpanMap(spans);
-        this.rootSpanId = findRootSpanId(spans, collectorAcceptTime);
+    	List<SpanBo> tmpSpans = new ArrayList<SpanBo>(spans);
+    	removeNeedlessRootSpan(tmpSpans);
+        this.spanIdMap = buildSpanMap(tmpSpans);
+        this.rootSpanId = findRootSpanId(tmpSpans, collectorAcceptTime);
+    }
+    
+    private void removeNeedlessRootSpan(List<SpanBo> spanList){
+
+    	Boolean scannedRootSpan = false;
+    	List<SpanBo> needlessRootSpans = new ArrayList<SpanBo>();
+        for (SpanBo span : spanList) {
+            if (span.isRoot()) {
+            	if(scannedRootSpan == false){
+            		scannedRootSpan = true;
+            	}
+            	else{
+            		needlessRootSpans.add(span);
+            	}
+            }
+        }
+
+        for (SpanBo span : needlessRootSpans) {
+            spanList.remove(span);
+        }
     }
 
     private long findRootSpanId(List<SpanBo> spanList, long collectorAcceptTime) {

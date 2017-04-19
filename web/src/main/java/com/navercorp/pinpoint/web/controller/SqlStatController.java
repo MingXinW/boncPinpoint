@@ -114,7 +114,7 @@ public class SqlStatController {
 				}
 			}
 		}
-		return chooseLimitedSlowSqls(sqlSpanList, limit);
+		return chooseLimitedSlowSqls(sqlSpanList, limit, execTime);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class SqlStatController {
 	 * @param limit
 	 * @return
 	 */
-	private List<Map<String,Object>> chooseLimitedSlowSqls(List<SqlSpanResult> sqls, int limit) {
+	private List<Map<String,Object>> chooseLimitedSlowSqls(List<SqlSpanResult> sqls, int limit, int execTime) {
 
 		List<Map<String,Object>> topApis = new ArrayList<Map<String,Object>>();
 		List<SqlSpanResult> limitSqls = new ArrayList<SqlSpanResult>();
@@ -177,6 +177,10 @@ public class SqlStatController {
 		}
 		logger.info("SlowSql size:{} limitSqls size:{}", sqls.size(), limitSqls.size());
 		for (SqlSpanResult result : limitSqls) {
+			if(result.getSpan().getElapsed() < execTime){
+				continue;
+			}
+			
 			Map<String, Object> sql = new HashMap<String, Object>();
 			sql.put("applicationName", result.getSpan().getApplicationId());
 			sql.put("sql", result.getSql());

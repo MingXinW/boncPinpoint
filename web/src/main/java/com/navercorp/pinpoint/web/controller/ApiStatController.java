@@ -105,7 +105,7 @@ public class ApiStatController {
 				List<SpanBo> metadata = scatter.selectTransactionMetadata(query);
 				logger.debug("application:{} api span size:{}", app.getName(), metadata.size());
 				
-				List<SpanBo> slowSpans = selectSlowSpans(metadata);
+				List<SpanBo> slowSpans = selectSlowSpans(metadata, execTime);
 				allSlowSpans.addAll(slowSpans);
 			}
 		}
@@ -159,7 +159,7 @@ public class ApiStatController {
 				List<SpanBo> metadata = scatter.selectTransactionMetadata(query);
 				logger.debug("application:{} api span size:{}", app.getName(), metadata.size());
 				
-				List<SpanBo> unsuccessSpans = selectSlowSpans(metadata);
+				List<SpanBo> unsuccessSpans = selectSlowSpans(metadata, 0);
 				allSlowSpans.addAll(unsuccessSpans);
 			}
 		}
@@ -289,7 +289,9 @@ public class ApiStatController {
 			api.put("agentId", span.getAgentId());
 			api.put("remoteAddr", span.getRemoteAddr());
 			api.put("endPoint", span.getEndPoint());
+			api.put("errCode", span.getErrCode());
 			api.put("exception", span.getExceptionMessage());
+			api.put("exceptionClass", span.getExceptionClass());
 
 			topApis.add(api);
 		}
@@ -328,10 +330,14 @@ public class ApiStatController {
 	 * @param metadata
 	 * @return
 	 */
-	private List<SpanBo> selectSlowSpans(List<SpanBo> metadata) {
+	private List<SpanBo> selectSlowSpans(List<SpanBo> metadata, int execTime) {
 
 		Map<String, SpanBo> slowSpan = new HashMap<String, SpanBo>();
 		for (SpanBo span : metadata) {
+			if(span.getElapsed() < execTime){
+				continue;
+			}
+			
 			String path = span.getRpc();
 			int res = span.getElapsed();
 			if (slowSpan.containsKey(path)) {
