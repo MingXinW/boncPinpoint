@@ -9,12 +9,12 @@
 	 * @class
 	 */
 	pinpointApp.constant('AgentAjaxServiceConfig', {
-		"agentList": "/getAgentList.pinpoint",				// agentId, timestamp ( or agentId, from, to )
-		"agentInfo": "/getAgentInfo.pinpoint", 				// agentId, timestamp
-		"agetEvent": "/getAgentEvent.pinpoint", 				// agentId, eventTimestamp, eventTypeCode
-		"agentStatus": "/getAgentStatus.pinpoint", 			// agentId, timestamp
-		"agentEventList": "/getAgentEvents.pinpoint", 		// agentId, from, to
-		"agentStateForChart": "/getAgentStat.pinpoint"		//
+		"agentList": "getAgentList.pinpoint",				// agentId, timestamp ( or agentId, from, to )
+		"agentInfo": "getAgentInfo.pinpoint", 				// agentId, timestamp
+		"agetEvent": "getAgentEvent.pinpoint", 				// agentId, eventTimestamp, eventTypeCode
+		"agentStatus": "getAgentStatus.pinpoint", 			// agentId, timestamp
+		"agentEventList": "getAgentEvents.pinpoint", 		// agentId, from, to
+		"agentStateForChart": "getAgentStat.pinpoint"		//
 	});
 
 	pinpointApp.service('AgentAjaxService', [ 'AgentAjaxServiceConfig', '$http', function ($config, $http) {

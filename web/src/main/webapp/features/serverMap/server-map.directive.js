@@ -13,7 +13,7 @@
 	        "sOverviewId": 'servermapOverview',
 	        "sBigFont": "11pt Lato,NanumGothic,ng,dotum,AppleGothic,sans-serif",
 	        "sSmallFont": "11pt Lato,NanumGothic,ng,dotum,AppleGothic,sans-serif",
-	        "sImageDir": '/images/servermap/',
+	        "sImageDir": 'images/servermap/',
 	        "htLinkType": {
 	            "sRouting": "Normal", // Normal, Orthogonal, AvoidNodes
 	            "sCurve": "JumpGap" // Bezier, JumpOver, JumpGap

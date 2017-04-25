@@ -9,7 +9,7 @@
 	 * @class
 	 */	
 	pinpointApp.constant('agentDaoServiceConfig', {
-	    agentStatUrl: '/getAgentStat.pinpoint'
+	    agentStatUrl: 'getAgentStat.pinpoint'
 	});
 	
 	pinpointApp.service('AgentDaoService', [ 'agentDaoServiceConfig',

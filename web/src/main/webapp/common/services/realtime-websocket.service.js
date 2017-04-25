@@ -8,7 +8,7 @@
 	 * @class
 	 */
 	pinpointApp.constant('RealtimeWebsocketServiceConfig', {
-		wsUrl: "/agent/activeThread.pinpointws",
+		wsUrl: "agent/activeThread.pinpointws",
 		wsTimeout: 10000, //ms
 		retryTimeout: 3000,
 		maxRetryCount: 1

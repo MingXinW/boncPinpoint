@@ -8,7 +8,7 @@
 	 * @class
 	 */	
 	pinpointApp.constant('agentInfoConfig', {
-	    agentStatUrl: '/getAgentStat.pinpoint'
+	    agentStatUrl: 'getAgentStat.pinpoint'
 	});
 	
 	pinpointApp.directive('agentInfoDirective', [ 'agentInfoConfig', '$timeout', 'AlertsService', 'ProgressBarService', 'AgentDaoService', 'AgentAjaxService', 'TooltipService', "AnalyticsService", 'helpContentService',

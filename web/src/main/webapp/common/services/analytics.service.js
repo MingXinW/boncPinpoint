@@ -108,12 +108,12 @@
 		this.CONST.ON = "on";
 		this.CONST.OFF = "off";
 		
-		this.CONST.MAIN_PAGE = "/main.page";
-		this.CONST.FILTEREDMAP_PAGE = "/filteredMap.page";
-		this.CONST.INSPECTOR_PAGE = "/inspector.page";
-		this.CONST.SCATTER_FULL_SCREEN_PAGE = "/scatterFullScreen.page";
-		this.CONST.TRANSACTION_DETAIL_PAGE = "/transactionDetail.page";
-		this.CONST.TRANSACTION_LIST_PAGE = "/transactionList.page";
-		this.CONST.TRANSACTION_VIEW_PAGE = "/transactionView.page";		
+		this.CONST.MAIN_PAGE = "main.page";
+		this.CONST.FILTEREDMAP_PAGE = "filteredMap.page";
+		this.CONST.INSPECTOR_PAGE = "inspector.page";
+		this.CONST.SCATTER_FULL_SCREEN_PAGE = "scatterFullScreen.page";
+		this.CONST.TRANSACTION_DETAIL_PAGE = "transactionDetail.page";
+		this.CONST.TRANSACTION_LIST_PAGE = "transactionList.page";
+		this.CONST.TRANSACTION_VIEW_PAGE = "transactionView.page";		
 	}]);
 })(jQuery);

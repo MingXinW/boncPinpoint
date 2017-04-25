@@ -8,7 +8,7 @@
 	 * @class
 	 */
 	pinpointApp.constant('TransactionDetailConfig', {
-	    applicationUrl: '/transactionInfo.pinpoint'
+	    applicationUrl: 'transactionInfo.pinpoint'
 	});
 	
 	pinpointApp.controller('TransactionDetailCtrl', ['TransactionDetailConfig', '$scope', '$rootScope', '$routeParams', '$timeout', '$rootElement', 'AlertsService', 'ProgressBarService', 'TransactionDaoService', '$window', '$location', 'AnalyticsService', 'TooltipService',

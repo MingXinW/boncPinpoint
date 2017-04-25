@@ -52,7 +52,7 @@
                     ng-class="{true: 'success', false: {'danger': transaction.exception}}[transaction == currentTransaction]">
                     <td style="vertical-align: middle">
                         <div style='padding-right:5px;text-align:right;position:relative;'>
-                            <a href ng-href="/transactionInfo.pinpoint?traceId={{transaction.traceId}}&focusTimestamp={{transaction.collectorAcceptTime}}"
+                            <a href ng-href="transactionInfo.pinpoint?traceId={{transaction.traceId}}&focusTimestamp={{transaction.collectorAcceptTime}}"
                                target="_blank" style="position:absolute;top:0;left:0;width:15px;height:15px;"></a>
                             {{transaction.index | number}}
                         </div>
