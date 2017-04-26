@@ -193,6 +193,11 @@ public class SqlStatController {
 			sql.put("remoteAddr", result.getSpan().getSpanBo().getRemoteAddr());
 			sql.put("endPoint", result.getSpan().getSpanBo().getEndPoint());
 			sql.put("exception", result.getSpan().getExceptionMessage());
+			sql.put("exceptionClass", result.getSpan().getSpanBo().getExceptionClass());
+			sql.put("errCode", result.getSpan().getSpanBo().getErrCode());
+			sql.put("serviceType", result.getSpan().getSpanBo().getServiceType());
+			sql.put("applicationServiceType", result.getSpan().getSpanBo().getApplicationServiceType());
+			sql.put("apiId", result.getSpan().getSpanBo().getApiId());
 
 			topApis.add(sql);
 		}

@@ -292,6 +292,10 @@ public class ApiStatController {
 			api.put("errCode", span.getErrCode());
 			api.put("exception", span.getExceptionMessage());
 			api.put("exceptionClass", span.getExceptionClass());
+			api.put("errCode", span.getErrCode());
+			api.put("serviceType", span.getServiceType());
+			api.put("applicationServiceType", span.getApplicationServiceType());
+			api.put("apiId", span.getApiId());
 
 			topApis.add(api);
 		}

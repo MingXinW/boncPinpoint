@@ -53,7 +53,7 @@
 	    	stopTimeoutChecker();
 	    };
 		function connectWebsocket() {
-			websocket = new WebSocket("ws://" + location.host + cfg.wsUrl);
+			websocket = new WebSocket("ws://" + location.host + location.pathname + cfg.wsUrl);
 			websocket.onopen = function(event) {
 				connectTime = lastReceiveTime = Date.now();
 				startTimeoutChecker();
