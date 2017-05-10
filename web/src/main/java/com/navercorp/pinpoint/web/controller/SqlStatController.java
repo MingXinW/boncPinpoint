@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.service.CommonService;
 import com.navercorp.pinpoint.web.service.ScatterChartService;
 import com.navercorp.pinpoint.web.service.SpanService;
@@ -100,8 +101,9 @@ public class SqlStatController {
 
 			logger.info("getServerMap() application:{} area:{} searchOption:{}", apps, area);
 
+			String appName = app.getName();
 			//ScatterData scatterData = getScatterData(app.getName(), range, 1, 1, limit*10, true);
-			List<Dot> scatterData = selectScatterData(app.getName(),area,limit * 10);
+			List<Dot> scatterData = selectScatterData(appName, area, limit * 10);
 		//	List<QueryCondition> query = parseTransaction(scatterData);
 			if(scatterData.size() > 0){
 				for(Dot dot : scatterData){
@@ -110,6 +112,13 @@ public class SqlStatController {
 					final long focusTimestamp = dot.getAcceptedTime();
 					// select spans
 					List<SqlSpanResult> result = this.spanService.selectSqlSpan(transactionId, focusTimestamp);
+
+					for (int i = result.size() - 1; i >= 0; i--) {
+						SpanAlign entity = result.get(i).getSpan();
+						if(!appName.equals(entity.getApplicationId())){
+							result.remove(i);
+						}
+					}
 					sqlSpanList.addAll(result);
 				}
 			}
