@@ -110,9 +110,9 @@ public class ApiStatController {
 		return chooseLimitedSlowApis(allSlowSpans, limit);
 	}
 
-	@RequestMapping(value = "/getUnsuccessTraces", method = RequestMethod.GET)
+	@RequestMapping(value = "/getErrorApis", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map<String,Object>> getUnsuccessTraces(@RequestParam("application") String applicationName,
+	public List<Map<String,Object>> getErrorApis(@RequestParam("application") String applicationName,
 			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
 			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
 			@RequestParam(value = "limit", required = false, defaultValue = "10000") int limit) {
@@ -164,9 +164,9 @@ public class ApiStatController {
 		return chooseLimitedSlowApis(allSlowSpans, limit);
 	}
 
-	@RequestMapping(value = "/getTraces", method = RequestMethod.GET)
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Map<String,Object>> getTraces(@RequestParam("application") String applicationName,
+	public List<Map<String,Object>> list(@RequestParam("application") String applicationName,
 			@RequestParam(value = "from", required = false, defaultValue = "0") long from,
 			@RequestParam(value = "to", required = false, defaultValue = "0") long to,
 			@RequestParam(value = "limit", required = false, defaultValue = "3000") int limit) {
@@ -293,6 +293,7 @@ public class ApiStatController {
 			api.put("serviceType", span.getServiceType());
 			api.put("applicationServiceType", span.getApplicationServiceType());
 			api.put("apiId", span.getApiId());
+			api.put("spanId", span.getSpanId());
 
 			topApis.add(api);
 		}
