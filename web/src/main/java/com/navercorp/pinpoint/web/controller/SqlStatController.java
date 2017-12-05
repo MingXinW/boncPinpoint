@@ -207,6 +207,7 @@ public class SqlStatController {
 			sql.put("serviceType", result.getSpan().getSpanBo().getServiceType());
 			sql.put("applicationServiceType", result.getSpan().getSpanBo().getApplicationServiceType());
 			sql.put("apiId", result.getSpan().getSpanBo().getApiId());
+			sql.put("spanId", result.getSpan().getSpanBo().getSpanId());
 
 			topApis.add(sql);
 		}
