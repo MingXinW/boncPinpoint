@@ -53,7 +53,7 @@ public class AgentEventHandler {
     @Resource(name = "agentEventWorker")
     private Executor executor;
 
-    @Resource
+    @Resource(name = "agentEventDaoProxy")
     private AgentEventDao agentEventDao;
 
     @Resource

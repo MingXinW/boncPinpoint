@@ -16,6 +16,8 @@
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.hbase,
+            			com.navercorp.pinpoint.collector.dao.es,
+            			com.navercorp.pinpoint.collector.dao.proxy,
                         com.navercorp.pinpoint.collector.handler,
                         com.navercorp.pinpoint.collector.manage,
                         com.navercorp.pinpoint.collector.mapper,
@@ -31,6 +33,7 @@
         <property name="locations">
             <list>
                 <value>classpath:hbase.properties</value>
+                <value>classpath:elasticsearch.properties</value>
                 <value>classpath:pinpoint-collector.properties</value>
             </list>
         </property>
