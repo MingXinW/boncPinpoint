@@ -16,12 +16,12 @@ public class AgentEventDaoProxy implements AgentEventDao {
 	private HbaseAgentEventDao hbaseAgentEventDao;
 
 	@Resource
-	private ESAgentEventDao eSAgentEventDao;
+	private ESAgentEventDao esAgentEventDao;
 
 	@Override
 	public void insert(AgentEventBo agentEventBo) {
 		hbaseAgentEventDao.insert(agentEventBo);
-		eSAgentEventDao.insert(agentEventBo);
+		esAgentEventDao.insert(agentEventBo);
 	}
 
 }

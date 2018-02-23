@@ -42,7 +42,8 @@ public class AgentLifeCycleHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
+
+    @Resource(name = "agentLifeCycleDaoProxy")
     private AgentLifeCycleDao agentLifeCycleDao;
 
     @Async("agentEventWorker")
