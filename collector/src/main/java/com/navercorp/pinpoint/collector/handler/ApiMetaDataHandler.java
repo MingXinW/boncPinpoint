@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.collector.dao.ApiMetaDataDao;
 import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ public class ApiMetaDataHandler implements RequestResponseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
+    @Resource(name ="apiMetaDataDaoProxy") 
     private ApiMetaDataDao sqlMetaDataDao;
 
     @Override

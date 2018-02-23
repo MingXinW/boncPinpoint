@@ -16,10 +16,11 @@
 
 package com.navercorp.pinpoint.collector.handler;
 
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.navercorp.pinpoint.collector.dao.AgentInfoDao;
@@ -36,10 +37,10 @@ public class AgentInfoHandler implements SimpleHandler, RequestResponseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AgentInfoHandler.class.getName());
 
-    @Autowired
+    @Resource(name ="agentInfoDaoProxy") 
     private AgentInfoDao agentInfoDao;
 
-    @Autowired
+    @Resource(name ="applicationIndexDaoProxy")
     private ApplicationIndexDao applicationIndexDao;
 
     public void handleSimple(TBase<?, ?> tbase) {

@@ -52,12 +52,14 @@ public class SpanHandler implements SimpleHandler {
     private TraceDao traceDao;
 
     @Autowired
+    @Qualifier("applicationTraceIndexDaoProxy")
     private ApplicationTraceIndexDao applicationTraceIndexDao;
 
     @Autowired
     private StatisticsHandler statisticsHandler;
 
     @Autowired
+    @Qualifier("hostApplicationMapDaoProxy")
     private HostApplicationMapDao hostApplicationMapDao;
 
     @Autowired

@@ -151,6 +151,25 @@ public class AgentInfoBo {
 
         return buffer.getBuffer();
     }
+    
+    public Builder toBuilder () {
+    	AgentInfoBo.Builder builder = new AgentInfoBo.Builder();
+        builder.setHostName(hostName);
+        builder.setIp(ip);
+        builder.setPorts(ports);
+        builder.setAgentId(agentId);
+        builder.setApplicationName(applicationName);
+        builder.setServiceTypeCode(serviceTypeCode);
+        builder.setPid(pid);
+        builder.setVmVersion(vmVersion);
+        builder.setAgentVersion(agentVersion);
+        builder.setStartTime(startTime);
+        builder.setEndTimeStamp(endTimeStamp);
+        builder.setEndStatus(endStatus);
+        builder.setJvmInfo(jvmInfo);
+        builder.setServerMetaData(serverMetaData);
+    	return builder;
+    }
 
     @Override
     public int hashCode() {
