@@ -47,7 +47,8 @@ public class ESTraceDao implements TraceDao {
 	public void insertSpanChunk(SpanChunkBo spanChunkBo) {
 		// TODO Auto-generated method stub
 		TransactionId transactionId = spanChunkBo.getTransactionId();
-        String id = transactionId.getAgentId();
+		String agentId = transactionId.getAgentId();
+        String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();
         
         try {
 			ObjectMapper mapper = new ObjectMapper();
