@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.common.server.bo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class SpanEventBo implements Event {
     private String endPoint;
     private int apiId;
 
-    private List<AnnotationBo> annotationBoList;
+    private List<AnnotationBo> annotationBoList = new ArrayList<AnnotationBo>();
 
     private int depth = -1;
     private long nextSpanId = -1;
