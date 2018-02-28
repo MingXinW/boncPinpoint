@@ -1,10 +1,11 @@
 package com.navercorp.pinpoint.collector.dao.es.base;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
-
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.navercorp.pinpoint.collector.util.EsIndexs;
 
 @Component
 public class EsClient {
@@ -26,6 +29,16 @@ public class EsClient {
 
 	@Value("${es.cluster.hosts}")
 	private String hosts;
+
+	public EsClient() {
+		super();
+	}
+
+	public EsClient(String clusterName, String hosts) {
+		super();
+		this.clusterName = clusterName;
+		this.hosts = hosts;
+	}
 
 	@PostConstruct
 	private void initClient() {
@@ -50,4 +63,21 @@ public class EsClient {
 		return nativeClient;
 	}
 
+	
+	public static void main(String args[]) {
+		
+		try {
+			EsClient esClient = new EsClient("blogic-5.3.3","172.16.11.128:8300");
+			esClient.initClient();
+			EsClient.client().prepareIndex("test", EsIndexs.TYPE,"test"+System.currentTimeMillis()).setSource(
+					jsonBuilder()
+			        .startObject()
+			        .field("stringValue", "stringMetaData.getStringValue()")
+			    .endObject()).get();
+			System.out.println("sucess");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

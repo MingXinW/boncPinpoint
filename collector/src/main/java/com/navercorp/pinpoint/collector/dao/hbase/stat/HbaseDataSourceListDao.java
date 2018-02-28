@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * @author Taejin Koo
  */
-@Repository
+@Repository("hbaseDataSourceListDao")
 public class HbaseDataSourceListDao implements AgentStatDaoV2<DataSourceListBo> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

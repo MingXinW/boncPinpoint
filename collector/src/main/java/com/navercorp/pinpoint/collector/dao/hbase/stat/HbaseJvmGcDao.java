@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @author HyunGil Jeong
  */
-@Repository
+@Repository("hbaseJvmGcDao")
 public class HbaseJvmGcDao implements AgentStatDaoV2<JvmGcBo> {
 
     @Autowired

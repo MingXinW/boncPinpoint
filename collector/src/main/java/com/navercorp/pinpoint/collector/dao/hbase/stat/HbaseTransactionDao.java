@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @author HyunGil Jeong
  */
-@Repository
+@Repository("hbaseTransactionDao")
 public class HbaseTransactionDao implements AgentStatDaoV2<TransactionBo> {
 
     @Autowired
