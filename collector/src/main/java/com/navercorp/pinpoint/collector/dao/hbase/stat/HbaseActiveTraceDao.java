@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author HyunGil Jeong
  */
-@Repository
+@Repository("hbaseActiveTraceDao")
 public class HbaseActiveTraceDao implements AgentStatDaoV2<ActiveTraceBo> {
 
     @Autowired

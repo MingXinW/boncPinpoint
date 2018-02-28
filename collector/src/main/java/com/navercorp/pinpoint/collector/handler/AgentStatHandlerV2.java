@@ -26,6 +26,9 @@ import com.navercorp.pinpoint.common.server.bo.stat.DataSourceListBo;
 import com.navercorp.pinpoint.common.server.bo.stat.JvmGcBo;
 import com.navercorp.pinpoint.common.server.bo.stat.JvmGcDetailedBo;
 import com.navercorp.pinpoint.common.server.bo.stat.TransactionBo;
+
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,22 +54,22 @@ public class AgentStatHandlerV2 implements Handler {
     @Autowired
     private AgentStatBatchMapper agentStatBatchMapper;
 
-    @Autowired
+    @Resource(name ="jvmGcBoProxy") 
     private AgentStatDaoV2<JvmGcBo> jvmGcDao;
 
-    @Autowired
+    @Resource(name ="jvmGcDetailedBoProxy")
     private AgentStatDaoV2<JvmGcDetailedBo> jvmGcDetailedDao;
 
-    @Autowired
+    @Resource(name ="cpuLoadBoProxy") 
     private AgentStatDaoV2<CpuLoadBo> cpuLoadDao;
 
-    @Autowired
+    @Resource(name ="transactionBoProxy") 
     private AgentStatDaoV2<TransactionBo> transactionDao;
 
-    @Autowired
+    @Resource(name ="activeTraceDaoProxy") 
     private AgentStatDaoV2<ActiveTraceBo> activeTraceDao;
 
-    @Autowired
+    @Resource(name ="dataSourceListBoProxy") 
     private AgentStatDaoV2<DataSourceListBo> dataSourceListDao;
 
     @Autowired(required = false)
