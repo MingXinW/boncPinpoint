@@ -4,6 +4,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,8 @@ import com.navercorp.pinpoint.thrift.dto.TTransaction;
 @Deprecated
 public class ESAgentStatDao implements AgentStatDao {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
     private ActiveTraceHistogramBoMapper activeTraceHistogramBoMapper;
 	
@@ -96,7 +100,7 @@ public class ESAgentStatDao implements AgentStatDao {
 	        client.prepareIndex(EsIndexs.AGENT_STAT, EsIndexs.TYPE, id).setSource(xcontentBuilder.endObject()).get();
         } catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+        	logger.error("esAgentStatDao insert error. Cause:{}", e.getMessage(), e);
 		}
     }
 

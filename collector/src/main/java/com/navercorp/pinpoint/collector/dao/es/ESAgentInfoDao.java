@@ -76,7 +76,7 @@ public class ESAgentInfoDao implements AgentInfoDao {
 					.setSource(json).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esAgentInfoDao insert error. Cause:{}", e.getMessage(), e);
 		}
 	}
 

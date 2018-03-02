@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +19,8 @@ import com.navercorp.pinpoint.thrift.dto.TSpan;
 @Repository("esApplicationTraceIndexDao")
 public class ESApplicationTraceIndexDao implements ApplicationTraceIndexDao {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
     private AcceptedTimeService acceptedTimeService;
 	
@@ -42,7 +46,7 @@ public class ESApplicationTraceIndexDao implements ApplicationTraceIndexDao {
 			    .endObject()).get();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esApplicationTraceIndexDao insert error. Cause:{}", e.getMessage(), e);
 		}
 	}
 
