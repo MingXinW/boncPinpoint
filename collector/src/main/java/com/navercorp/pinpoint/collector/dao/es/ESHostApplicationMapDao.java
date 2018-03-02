@@ -71,7 +71,7 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 			        .field("bindServiceType", bindServiceType)
 			    .endObject()).get();
 		} catch (IOException ex) {
-			 logger.warn("retry one. Caused:{}", ex.getCause(), ex);
+			 logger.error("retry one. Caused:{}", ex.getCause(), ex);
 			 
 		}
     }

@@ -44,7 +44,7 @@ public class ESApiMetaDataDao implements ApiMetaDataDao {
 					.setSource(json).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esApiMetaDataDao insert error. Cause:{}", e.getMessage(), e);
 		}
 	}
 

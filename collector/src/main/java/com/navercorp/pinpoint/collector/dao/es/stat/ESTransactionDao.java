@@ -1,7 +1,10 @@
 package com.navercorp.pinpoint.collector.dao.es.stat;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
@@ -12,6 +15,8 @@ import com.navercorp.pinpoint.common.server.bo.stat.TransactionBo;
 @Repository("esTransactionDao")
 public class ESTransactionDao implements AgentStatDaoV2<TransactionBo> {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Override
 	public void insert(String agentId, List<TransactionBo> transactionBos) {
 		// TODO Auto-generated method stub
@@ -21,7 +26,12 @@ public class ESTransactionDao implements AgentStatDaoV2<TransactionBo> {
 		if (transactionBos == null || transactionBos.isEmpty()) {
 			return;
 		}
-		AgentStatESOperationFactory.createPuts(agentId, AgentStatType.ACTIVE_TRACE, transactionBos);
+		try {
+			AgentStatESOperationFactory.createPuts(agentId, AgentStatType.ACTIVE_TRACE, transactionBos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error("esTransactionDao insert error. Cause:{}", e.getMessage(), e);
+		}
 	}
 
 }

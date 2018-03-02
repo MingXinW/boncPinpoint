@@ -20,18 +20,22 @@ import com.navercorp.pinpoint.collector.dao.SqlMetaDataDao;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 import com.navercorp.pinpoint.thrift.dto.TSqlMetaData;
 
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author emeroad
  */
-//@Service
+@Service
 public class SqlMetaDataHandler implements RequestResponseHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-//    @Autowired
+    @Resource(name ="sqlMetaDataDaoProxy") 
     private SqlMetaDataDao sqlMetaDataDao;
 
     @Override

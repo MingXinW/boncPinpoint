@@ -38,10 +38,8 @@ public class ESApplicationIndexDao implements ApplicationIndexDao {
 			    .endObject()).get();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esApplicationIndexDao insert error. Cause:{}", e.getMessage(), e);
 		}
-
-		logger.debug("Insert agentInfo. {}", agentInfo);
 	}
 
 }

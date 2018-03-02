@@ -1,7 +1,10 @@
 package com.navercorp.pinpoint.collector.dao.es.stat;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
@@ -12,6 +15,8 @@ import com.navercorp.pinpoint.common.server.bo.stat.JvmGcBo;
 @Repository("esJvmGcDao")
 public class ESJvmGcDao implements AgentStatDaoV2<JvmGcBo> {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Override
 	public void insert(String agentId, List<JvmGcBo> jvmGcBos) {
 		// TODO Auto-generated method stub
@@ -21,7 +26,12 @@ public class ESJvmGcDao implements AgentStatDaoV2<JvmGcBo> {
 		if (jvmGcBos == null || jvmGcBos.isEmpty()) {
 			return;
 		}
-		AgentStatESOperationFactory.createPuts(agentId, AgentStatType.JVM_GC, jvmGcBos);
+		try {
+			AgentStatESOperationFactory.createPuts(agentId, AgentStatType.JVM_GC, jvmGcBos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error("esJvmGcDao insert error. Cause:{}", e.getMessage(), e);
+		}
 	}
 
 }

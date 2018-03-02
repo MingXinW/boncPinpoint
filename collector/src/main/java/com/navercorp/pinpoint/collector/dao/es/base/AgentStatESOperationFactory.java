@@ -10,6 +10,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +28,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.AgentStatType;
 
 public class AgentStatESOperationFactory {
 
-	public static <T extends AgentStatDataPoint> boolean createPuts( String agentId, AgentStatType agentStatType, List<T> agentStatDataPoints) {
+	public static <T extends AgentStatDataPoint> boolean createPuts( String agentId, AgentStatType agentStatType, List<T> agentStatDataPoints) throws IOException{
         if (agentStatDataPoints == null || agentStatDataPoints.isEmpty()) {
             return false;
         }
@@ -35,13 +37,10 @@ public class AgentStatESOperationFactory {
         
         
         Map<Long, List<T>> timeslots = slotAgentStatDataPoints(agentStatDataPoints);
-        try {
 	        for (Map.Entry<Long, List<T>> timeslot : timeslots.entrySet()) {
 	            long baseTimestamp = timeslot.getKey();
 	            List<T> slottedAgentStatDataPoints = timeslot.getValue();
 	            String id = agentId + EsIndexs.ID_SEP + agentStatType.getTypeCode() + EsIndexs.ID_SEP + baseTimestamp;
-	            ObjectMapper mapper = new ObjectMapper();
-				byte[] json = mapper.writeValueAsBytes(slottedAgentStatDataPoints);
 	            bulkRequest.add(client.prepareIndex(EsIndexs.AGENT_STAT_V2, EsIndexs.TYPE, id)
 	                    .setSource(jsonBuilder()
 	                                .startObject()
@@ -51,10 +50,6 @@ public class AgentStatESOperationFactory {
 	                              )
 	                    );
 	        }
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
         BulkResponse bulkResponse = bulkRequest.get();
         return bulkResponse.hasFailures();
     }

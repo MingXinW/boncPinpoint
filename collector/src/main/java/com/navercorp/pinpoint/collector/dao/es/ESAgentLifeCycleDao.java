@@ -32,9 +32,9 @@ public class ESAgentLifeCycleDao implements AgentLifeCycleDao {
 		final String agentId = agentLifeCycleBo.getAgentId();
 		final long startTimestamp = agentLifeCycleBo.getStartTimestamp();
 		final long eventIdentifier = agentLifeCycleBo.getEventIdentifier();
-		long reverseStartTimestamp = TimeUtils.reverseTimeMillis(startTimestamp);
-		long reverseEventCounter = TimeUtils.reverseTimeMillis(eventIdentifier);
-		String id = agentId + EsIndexs.ID_SEP + reverseStartTimestamp + EsIndexs.ID_SEP + reverseEventCounter;
+		/*long reverseStartTimestamp = TimeUtils.reverseTimeMillis(startTimestamp);
+		long reverseEventCounter = TimeUtils.reverseTimeMillis(eventIdentifier);*/
+		String id = agentId + EsIndexs.ID_SEP + startTimestamp + EsIndexs.ID_SEP + eventIdentifier;
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -43,7 +43,7 @@ public class ESAgentLifeCycleDao implements AgentLifeCycleDao {
 					.setSource(json).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esAgentLifeCycleDao insert error. Cause:{}", e.getMessage(), e);
 		}
 	}
 

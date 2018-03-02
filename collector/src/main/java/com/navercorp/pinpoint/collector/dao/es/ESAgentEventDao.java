@@ -39,7 +39,7 @@ public class ESAgentEventDao implements AgentEventDao {
 					.setSource(json).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("esAgentEventDao insert error. Cause:{}", e.getMessage(), e);
 		}
 	}
 
