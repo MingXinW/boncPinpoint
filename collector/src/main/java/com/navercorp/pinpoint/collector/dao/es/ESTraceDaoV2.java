@@ -60,7 +60,7 @@ public class ESTraceDaoV2 implements TraceDao {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			byte[] json = mapper.writeValueAsBytes(spanChunkBo);
-			EsClient.client().prepareIndex(EsIndexs.TRACE_V2, EsIndexs.TYPE, id).setSource(json).get();
+			EsClient.client().prepareIndex(EsIndexs.TRACE_CHUNK_V2, EsIndexs.TYPE, id).setSource(json).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esTraceDaoV2 insertSpanChunk error. Cause:{}", e.getMessage(), e);

@@ -37,6 +37,7 @@ public class EsIndexs {
 	public static final String TRACES = "p_traces";
 	
 	public static final String TRACE_V2 = "p_trace_v2";
+	public static final String TRACE_CHUNK_V2 = "p_trace_chunk_v2";
 	
 	public static final String APPLICATION_MAP_STATISTICS_CALLER_VER2 = "p_application_map_statistics_caller_ver2";
 	
