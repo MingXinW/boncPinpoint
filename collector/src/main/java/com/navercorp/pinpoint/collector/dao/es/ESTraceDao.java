@@ -7,14 +7,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.dao.TraceDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
+import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.AnnotationBo;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
@@ -39,10 +41,14 @@ public class ESTraceDao implements TraceDao {
         String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();
         parseSpanBo(spanBo);
         try {
-			ObjectMapper mapper = new ObjectMapper();
+			/*ObjectMapper mapper = new ObjectMapper();
 			byte[] json = mapper.writeValueAsBytes(spanBo);
 			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE, id)
-					.setSource(json).get();
+					.setSource(json,XContentType.JSON).get();*/
+			/*EsClient.insert(spanBo,id, EsIndexs.TRACES, EsIndexs.TYPE);*/
+        	JSONObject jsonbject = BeanToJson.toEsTime(spanBo);
+			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE, id)
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esTraceDao insert error. Cause:{}", e.getMessage(), e);
@@ -57,10 +63,9 @@ public class ESTraceDao implements TraceDao {
         String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();
         parseSpanChunkBo(spanChunkBo);
         try {
-			ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(spanChunkBo);
-			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE, id)
-					.setSource(json).get();
+        	JSONObject jsonbject = BeanToJson.toEsTime(spanChunkBo);
+			EsClient.client().prepareIndex(EsIndexs.TRACES_CHUNK, EsIndexs.TYPE, id)
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esTraceDao insertSpanChunk error. Cause:{}", e.getMessage(), e);

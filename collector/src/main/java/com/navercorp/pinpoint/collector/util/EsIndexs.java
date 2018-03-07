@@ -1,10 +1,5 @@
 package com.navercorp.pinpoint.collector.util;
 
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_COL_ACTIVE_TRACE_HISTOGRAM;
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION;
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW;
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION;
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW;
 
 public class EsIndexs {
 	
@@ -35,6 +30,8 @@ public class EsIndexs {
 	public static final String SQL_META_DATA_VER2 = "p_sql_meta_data_ver2";
 	
 	public static final String TRACES = "p_traces";
+	
+	public static final String TRACES_CHUNK = "p_traces_chunk";
 	
 	public static final String TRACE_V2 = "p_trace_v2";
 	public static final String TRACE_CHUNK_V2 = "p_trace_chunk_v2";
