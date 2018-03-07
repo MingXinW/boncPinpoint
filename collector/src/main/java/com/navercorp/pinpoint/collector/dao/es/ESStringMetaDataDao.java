@@ -1,15 +1,16 @@
 package com.navercorp.pinpoint.collector.dao.es;
 
 
-import java.io.IOException;
 
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSONObject;
 import com.navercorp.pinpoint.collector.dao.StringMetaDataDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
+import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.StringMetaDataBo;
 import com.navercorp.pinpoint.thrift.dto.TStringMetaData;
@@ -35,10 +36,10 @@ public class ESStringMetaDataDao implements StringMetaDataDao {
         String id = stringMetaDataBo.getAgentId() + EsIndexs.ID_SEP + stringMetaDataBo.getStartTime() + EsIndexs.ID_SEP + stringMetaDataBo.getStringId();
         
         try {
-        	ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(stringMetaData);
-			EsClient.client().prepareIndex(EsIndexs.STRING_METADATA, EsIndexs.TYPE,id).setSource(json).get();
-		} catch (IOException e) {
+        	JSONObject jsonbject = BeanToJson.toEsTime(stringMetaData);
+			EsClient.client().prepareIndex(EsIndexs.STRING_METADATA, EsIndexs.TYPE, id)
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("esStringMetaDataDao insert error. Cause:{}", e.getMessage(), e);
 		}

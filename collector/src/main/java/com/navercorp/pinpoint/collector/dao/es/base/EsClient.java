@@ -1,26 +1,28 @@
 package com.navercorp.pinpoint.collector.dao.es.base;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.navercorp.pinpoint.collector.util.EsIndexs;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class EsClient {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EsClient.class);
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private static TransportClient nativeClient;
 
@@ -51,9 +53,9 @@ public class EsClient {
 				nativeClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(hostAndPort[0]),
 						Integer.valueOf(hostAndPort[1])));
 			} catch (UnknownHostException e) {
-				LOG.error("es cluster UnknownHost {}", hostAndPort[0]);
+				logger.error("es cluster UnknownHost {}", hostAndPort[0]);
 			} catch (NumberFormatException e) {
-				LOG.error("es cluster port error {}", hostAndPort[1]);
+				logger.error("es cluster port error {}", hostAndPort[1]);
 			}
 
 		}
@@ -63,21 +65,45 @@ public class EsClient {
 		return nativeClient;
 	}
 
+	public static <T> IndexResponse insert(T t, String index, String type) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String text = mapper.writeValueAsString(t);
+		JSONObject jsonbject = JSONObject.parseObject(text);
+		jsonbject.put("@timestamp", Long.toString(System.currentTimeMillis()));
+		IndexResponse response = EsClient.client().prepareIndex(index, type)
+				.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
+		return response;
+	}
 	
-	public static void main(String args[]) {
-		
-		try {
-			EsClient esClient = new EsClient("blogic-5.3.3","172.16.11.128:8300");
-			esClient.initClient();
-			EsClient.client().prepareIndex("test", EsIndexs.TYPE,"test"+System.currentTimeMillis()).setSource(
-					jsonBuilder()
-			        .startObject()
-			        .field("stringValue", "stringMetaData.getStringValue()")
-			    .endObject()).get();
-			System.out.println("sucess");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public static <T> IndexResponse insert(T t,String id, String index, String type) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String text = mapper.writeValueAsString(t);
+		JSONObject jsonbject = JSONObject.parseObject(text);
+		jsonbject.put("@timestamp", Long.toString(System.currentTimeMillis()));
+		IndexResponse response = EsClient.client().prepareIndex(index, type,id)
+				.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
+		return response;
+	}
+	
+	public static IndexResponse insert(JSONObject jsonbject,String id, String index, String type) {
+		if(jsonbject != null) {
+			jsonbject.put("@timestamp", Long.toString(System.currentTimeMillis()));
+			IndexResponse response = EsClient.client().prepareIndex(index, type,id)
+					.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
+			return response;
+		}else {
+			return null;
+		}
+	}
+	
+	public static IndexResponse insert(JSONObject jsonbject,String index, String type) {
+		if(jsonbject != null) {
+			jsonbject.put("@timestamp", Long.toString(System.currentTimeMillis()));
+			IndexResponse response = EsClient.client().prepareIndex(index, type)
+					.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
+			return response;
+		}else {
+			return null;
 		}
 	}
 }

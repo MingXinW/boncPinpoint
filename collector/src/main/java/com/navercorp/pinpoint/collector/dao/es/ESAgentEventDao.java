@@ -1,13 +1,15 @@
 package com.navercorp.pinpoint.collector.dao.es;
 
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.dao.AgentEventDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
+import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.AgentEventBo;
 import com.navercorp.pinpoint.common.util.TimeUtils;
@@ -33,10 +35,10 @@ public class ESAgentEventDao implements AgentEventDao {
 		String id = agentId + EsIndexs.ID_SEP + reverseStartTimestamp;
 
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(agentEventBo);
+			/*EsClient.insert(agentEventBo,id, EsIndexs.AGENT_EVENT, EsIndexs.TYPE);*/
+			JSONObject jsonbject = BeanToJson.toEsTime(agentEventBo);
 			EsClient.client().prepareIndex(EsIndexs.AGENT_EVENT, EsIndexs.TYPE, id)
-					.setSource(json).get();
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esAgentEventDao insert error. Cause:{}", e.getMessage(), e);

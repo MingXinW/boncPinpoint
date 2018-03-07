@@ -10,11 +10,6 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.transport.TransportClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
@@ -46,6 +41,7 @@ public class AgentStatESOperationFactory {
 	                                .startObject()
 	                                    .field("stats", slottedAgentStatDataPoints)
 	                                    .field("agentStatType", agentStatType.getTypeCode())
+	                                    .field("@timestamp", Long.toString(System.currentTimeMillis()))
 	                                .endObject()
 	                              )
 	                    );

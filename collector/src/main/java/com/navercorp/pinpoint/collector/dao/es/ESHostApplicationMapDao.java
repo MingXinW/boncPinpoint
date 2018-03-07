@@ -1,17 +1,17 @@
 package com.navercorp.pinpoint.collector.dao.es;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-import java.io.IOException;
-
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.alibaba.fastjson.JSONObject;
 import com.navercorp.pinpoint.collector.dao.HostApplicationMapDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.util.AtomicLongUpdateMap;
+import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
 import com.navercorp.pinpoint.common.util.TimeSlot;
@@ -63,14 +63,16 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
         String id = parentApplicationName + EsIndexs.ID_SEP + parentServiceType + EsIndexs.ID_SEP + statisticsRowSlot;
 
         try {
-			EsClient.client().prepareIndex(EsIndexs.HOST_APPLICATION_MAP_VER2, EsIndexs.TYPE,id).setSource(
-					jsonBuilder()
-			        .startObject()
-			        .field("host", host)
-			        .field("bindApplicationName", bindApplicationName)
-			        .field("bindServiceType", bindServiceType)
-			    .endObject()).get();
-		} catch (IOException ex) {
+        	JSONObject jsonbject = new JSONObject();
+			jsonbject.put("host", host);
+			jsonbject.put("bindApplicationName", bindApplicationName);
+			jsonbject.put("bindServiceType", bindServiceType);
+			
+			jsonbject = BeanToJson.addEsTime(jsonbject);
+			EsClient.client().prepareIndex(EsIndexs.HOST_APPLICATION_MAP_VER2, EsIndexs.TYPE, id)
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
+			
+		} catch (Exception ex) {
 			 logger.error("retry one. Caused:{}", ex.getCause(), ex);
 			 
 		}

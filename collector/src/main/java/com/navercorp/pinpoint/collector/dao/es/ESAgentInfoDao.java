@@ -1,16 +1,18 @@
 package com.navercorp.pinpoint.collector.dao.es;
 
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.dao.AgentInfoDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.mapper.thrift.ThriftBoMapper;
+import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.AgentInfoBo;
 import com.navercorp.pinpoint.common.server.bo.JvmInfoBo;
@@ -48,12 +50,7 @@ public class ESAgentInfoDao implements AgentInfoDao {
         if (logger.isDebugEnabled()) {
             logger.debug("insert agent info. {}", agentInfo);
         }
-
-        //byte[] agentId = Bytes.toBytes(agentInfo.getAgentId());
         long reverseKey = TimeUtils.reverseTimeMillis(agentInfo.getStartTimestamp());
-        //byte[] rowKey = RowKeyUtils.concatFixedByteAndLong(agentId, HBaseTables.AGENT_NAME_MAX_LEN, reverseKey);
-
-        // should add additional agent informations. for now added only starttime for sqlMetaData
         AgentInfoBo agentInfoBo = this.agentInfoBoMapper.map(agentInfo);
         AgentInfoBo.Builder builder = agentInfoBo.toBuilder();
         if (agentInfo.isSetServerMetaData()) {
@@ -68,12 +65,12 @@ public class ESAgentInfoDao implements AgentInfoDao {
        
 		try {
 			 agentInfoBo = builder.build();
-			 ObjectMapper mapper = new ObjectMapper();
-		     byte[] json = mapper.writeValueAsBytes(agentInfoBo);
 		     String id = agentInfo.getAgentId() + EsIndexs.ID_SEP + reverseKey;
-				// TODO Auto-generated method stub
-			EsClient.client().prepareIndex(EsIndexs.AGENT_INFO,EsIndexs.TYPE, id)
-					.setSource(json).get();
+			/*EsClient.insert(agentInfoBo,id, EsIndexs.AGENT_INFO, EsIndexs.TYPE);*/
+			
+			JSONObject jsonbject = BeanToJson.toEsTime(agentInfo);
+			EsClient.client().prepareIndex(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id)
+			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esAgentInfoDao insert error. Cause:{}", e.getMessage(), e);
