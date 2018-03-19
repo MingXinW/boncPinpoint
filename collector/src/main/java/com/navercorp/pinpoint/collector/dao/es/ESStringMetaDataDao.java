@@ -12,7 +12,6 @@ import com.navercorp.pinpoint.collector.dao.StringMetaDataDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
-import com.navercorp.pinpoint.common.server.bo.StringMetaDataBo;
 import com.navercorp.pinpoint.thrift.dto.TStringMetaData;
 
 @Repository("esStringMetaDataDao")
@@ -31,13 +30,13 @@ public class ESStringMetaDataDao implements StringMetaDataDao {
             logger.debug("insert:{}", stringMetaData);
         }
 
-        final StringMetaDataBo stringMetaDataBo = new StringMetaDataBo(stringMetaData.getAgentId(), stringMetaData.getAgentStartTime(), stringMetaData.getStringId());
+        //final StringMetaDataBo stringMetaDataBo = new StringMetaDataBo(stringMetaData.getAgentId(), stringMetaData.getAgentStartTime(), stringMetaData.getStringId());
         
-        String id = stringMetaDataBo.getAgentId() + EsIndexs.ID_SEP + stringMetaDataBo.getStartTime() + EsIndexs.ID_SEP + stringMetaDataBo.getStringId();
+        //String id = stringMetaDataBo.getAgentId() + EsIndexs.ID_SEP + stringMetaDataBo.getStartTime() + EsIndexs.ID_SEP + stringMetaDataBo.getStringId();
         
         try {
         	JSONObject jsonbject = BeanToJson.toEsTime(stringMetaData);
-			EsClient.client().prepareIndex(EsIndexs.STRING_METADATA, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.STRING_METADATA, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

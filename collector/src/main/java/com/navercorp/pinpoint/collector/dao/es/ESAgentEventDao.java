@@ -12,7 +12,6 @@ import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.AgentEventBo;
-import com.navercorp.pinpoint.common.util.TimeUtils;
 
 @Repository("esAgentEventDao")
 public class ESAgentEventDao implements AgentEventDao {
@@ -29,20 +28,48 @@ public class ESAgentEventDao implements AgentEventDao {
 			logger.debug("insert event. {}", agentEventBo.toString());
 		}
 
-		final String agentId = agentEventBo.getAgentId();
+		/*final String agentId = agentEventBo.getAgentId();
 		final long eventTimestamp = agentEventBo.getEventTimestamp();
-		long reverseStartTimestamp = TimeUtils.reverseTimeMillis(eventTimestamp);
-		String id = agentId + EsIndexs.ID_SEP + reverseStartTimestamp;
+		String id = agentId + EsIndexs.ID_SEP + eventTimestamp;*/
 
 		try {
-			/*EsClient.insert(agentEventBo,id, EsIndexs.AGENT_EVENT, EsIndexs.TYPE);*/
-			JSONObject jsonbject = BeanToJson.toEsTime(agentEventBo);
-			EsClient.client().prepareIndex(EsIndexs.AGENT_EVENT, EsIndexs.TYPE, id)
-			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
-		} catch (JsonProcessingException e) {
+			insertToEs(agentEventBo);
+			
+			/*synchronized (this) {
+				boolean bool = EsClient.indexExists(EsIndexs.AGENT_INFO);
+				if (!bool) {
+					insertToEs(agentEventBo);
+				}else {
+					BoolQueryBuilder queryBuilders = QueryBuilders.boolQuery()
+							.must(QueryBuilders.matchQuery("agentId", agentEventBo.getAgentId()))
+							.must(QueryBuilders.matchQuery("startTimestamp", agentEventBo.getStartTimestamp()));
+					SearchHit[] searchs = EsClient.searh(EsIndexs.AGENT_EVENT, EsIndexs.TYPE, queryBuilders);
+					if(searchs.length > 0) {
+						SearchHit search = searchs[0];
+						String id = search.getId();
+						JSONObject jsonbject = BeanToJson.toEs(agentEventBo);
+						UpdateRequest updateRequest = new UpdateRequest();
+						updateRequest.index(EsIndexs.AGENT_EVENT);
+						updateRequest.type(EsIndexs.TYPE);
+						updateRequest.id(id);
+						updateRequest.doc(jsonbject.toJSONString(), XContentType.JSON);
+						EsClient.update(updateRequest);
+					}else {
+						insertToEs(agentEventBo);
+					}
+				}
+			}*/
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("esAgentEventDao insert error. Cause:{}", e.getMessage(), e);
 		}
+	}
+	
+	public void insertToEs(AgentEventBo agentEventBo) throws JsonProcessingException{
+		JSONObject jsonbject = BeanToJson.toEsTime(agentEventBo);
+		jsonbject.put("eventTypeCode", agentEventBo.getEventType().getCode());
+		EsClient.client().prepareIndex(EsIndexs.AGENT_EVENT, EsIndexs.TYPE)
+		.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 	}
 
 }

@@ -48,12 +48,23 @@
 
     <import resource="classpath:applicationContext-hbase.xml"/>
 
-    <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
+    <!-- <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
         <beans:property name="cachedStatisticsDaoList">
             <beans:list>
                 <beans:ref bean="hbaseMapStatisticsCallerDao"/>
                 <beans:ref bean="hbaseMapStatisticsCalleeDao"/>
                 <beans:ref bean="hbaseMapResponseTimeDao"/>
+            </beans:list>
+        </beans:property>
+        <property name="flushPeriod" value="${statistics.flushPeriod}"/>
+    </bean> -->
+    
+    <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
+        <beans:property name="cachedStatisticsDaoList">
+            <beans:list>
+                <beans:ref bean="mapStatisticsCallerDaoProxy"/>
+                <beans:ref bean="mapStatisticsCalleeDaoProxy"/>
+                <beans:ref bean="mapResponseTimeDaoProxy"/>
             </beans:list>
         </beans:property>
         <property name="flushPeriod" value="${statistics.flushPeriod}"/>

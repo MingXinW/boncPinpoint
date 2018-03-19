@@ -33,15 +33,18 @@ public class AgentStatESOperationFactory {
         
         Map<Long, List<T>> timeslots = slotAgentStatDataPoints(agentStatDataPoints);
 	        for (Map.Entry<Long, List<T>> timeslot : timeslots.entrySet()) {
-	            long baseTimestamp = timeslot.getKey();
+	           // long baseTimestamp = timeslot.getKey();
 	            List<T> slottedAgentStatDataPoints = timeslot.getValue();
-	            String id = agentId + EsIndexs.ID_SEP + agentStatType.getTypeCode() + EsIndexs.ID_SEP + baseTimestamp;
-	            bulkRequest.add(client.prepareIndex(EsIndexs.AGENT_STAT_V2, EsIndexs.TYPE, id)
+	            //String id = agentId + EsIndexs.ID_SEP + agentStatType.getTypeCode() + EsIndexs.ID_SEP + baseTimestamp;
+	            bulkRequest.add(client.prepareIndex(EsIndexs.AGENT_STAT_V2, EsIndexs.TYPE)
 	                    .setSource(jsonBuilder()
 	                                .startObject()
 	                                    .field("stats", slottedAgentStatDataPoints)
 	                                    .field("agentStatType", agentStatType.getTypeCode())
 	                                    .field("@timestamp", Long.toString(System.currentTimeMillis()))
+	                                    .field("agentId", agentId)
+	                                    .field("typeCode", agentStatType.getTypeCode())
+	                                    .field("baseTimestamp", timeslot.getKey())
 	                                .endObject()
 	                              )
 	                    );

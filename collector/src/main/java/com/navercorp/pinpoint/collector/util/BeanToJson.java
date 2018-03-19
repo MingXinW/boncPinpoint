@@ -24,6 +24,13 @@ public class BeanToJson {
 		return jsonbject;
 	}
 	
+	public static <T> JSONObject toEs(T t) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		String text = mapper.writeValueAsString(t);
+		JSONObject jsonbject = JSONObject.parseObject(text);
+		return jsonbject;
+	}
+	
 	public static JSONObject addEsTime(JSONObject jsonbject) {
 		if(jsonbject != null) {
 			Calendar calendar = Calendar.getInstance();

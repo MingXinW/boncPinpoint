@@ -12,7 +12,6 @@ import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.ApiMetaDataBo;
-import com.navercorp.pinpoint.common.server.bo.MethodTypeEnum;
 import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
 
 @Repository("esApiMetaDataDao")
@@ -31,23 +30,27 @@ public class ESApiMetaDataDao implements ApiMetaDataDao {
 		ApiMetaDataBo apiMetaDataBo = new ApiMetaDataBo(apiMetaData.getAgentId(), apiMetaData.getAgentStartTime(),
 				apiMetaData.getApiId());
 
-		String agentId = apiMetaDataBo.getAgentId();
-		long startTime = apiMetaDataBo.getStartTime();
-		int apiId = apiMetaDataBo.getApiId();
-		String id = agentId + EsIndexs.ID_SEP + startTime + EsIndexs.ID_SEP + apiId;
 		apiMetaDataBo.setApiInfo(apiMetaData.getApiInfo());
-		apiMetaDataBo.setLineNumber(apiMetaData.getLine());
-		apiMetaDataBo.setMethodTypeEnum(MethodTypeEnum.valueOf(apiMetaData.getType()));
+		if (apiMetaData.isSetLine()) {
+			apiMetaDataBo.setLineNumber(apiMetaData.getLine());
+		} else {
+			apiMetaDataBo.setLineNumber(-1);
+		}
+
+		String id = apiMetaDataBo.getAgentId() + EsIndexs.ID_SEP + apiMetaDataBo.getStartTime() + EsIndexs.ID_SEP + apiMetaDataBo.getApiId();
 
 		try {
-			/*ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(apiMetaDataBo);
-			EsClient.client().prepareIndex(EsIndexs.API_METADATA, EsIndexs.TYPE, id)
-					.setSource(json,XContentType.JSON).get();*/
-			/*EsClient.insert(apiMetaDataBo,id, EsIndexs.API_METADATA, EsIndexs.TYPE);*/
 			JSONObject jsonbject = BeanToJson.toEsTime(apiMetaDataBo);
-			EsClient.client().prepareIndex(EsIndexs.API_METADATA, EsIndexs.TYPE, id)
-			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
+			
+			if (apiMetaData.isSetType()) {
+				/*jsonbject.put("", MethodTypeEnum.valueOf(apiMetaData.getType()));*/
+				jsonbject.put("type", apiMetaData.getType());
+			} else {
+				jsonbject.put("type", 0);
+			}
+			
+			EsClient.client().prepareIndex(EsIndexs.API_METADATA, EsIndexs.TYPE,id)
+					.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("esApiMetaDataDao insert error. Cause:{}", e.getMessage(), e);

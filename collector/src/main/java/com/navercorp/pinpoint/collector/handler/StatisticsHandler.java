@@ -21,6 +21,8 @@ import com.navercorp.pinpoint.collector.dao.MapStatisticsCalleeDao;
 import com.navercorp.pinpoint.collector.dao.MapStatisticsCallerDao;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +34,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class StatisticsHandler {
 
-    @Autowired
+    /*@Autowired*/
+    @Resource(name ="mapStatisticsCalleeDaoProxy") 
     private MapStatisticsCalleeDao mapStatisticsCalleeDao;
 
-    @Autowired
+    /*@Autowired*/
+    @Resource(name ="mapStatisticsCallerDaoProxy") 
     private MapStatisticsCallerDao mapStatisticsCallerDao;
 
-    @Autowired
+    @Resource(name ="mapResponseTimeDaoProxy") 
     private MapResponseTimeDao mapResponseTimeDao;
 
     /**
