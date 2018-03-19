@@ -22,7 +22,6 @@ import com.navercorp.pinpoint.common.server.bo.AnnotationBo;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.SpanChunkBo;
 import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
-import com.navercorp.pinpoint.common.util.TransactionId;
 
 @Repository("esTraceDao")
 public class ESTraceDao implements TraceDao {
@@ -36,18 +35,13 @@ public class ESTraceDao implements TraceDao {
             throw new NullPointerException("span must not be null");
         }
 
-        TransactionId transactionId = spanBo.getTransactionId();
+        /*TransactionId transactionId = spanBo.getTransactionId();
         String agentId = transactionId.getAgentId();
-        String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();
+        String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();*/
         parseSpanBo(spanBo);
         try {
-			/*ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(spanBo);
-			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE, id)
-					.setSource(json,XContentType.JSON).get();*/
-			/*EsClient.insert(spanBo,id, EsIndexs.TRACES, EsIndexs.TYPE);*/
         	JSONObject jsonbject = BeanToJson.toEsTime(spanBo);
-			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.TRACES, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -58,13 +52,13 @@ public class ESTraceDao implements TraceDao {
 	@Override
 	public void insertSpanChunk(SpanChunkBo spanChunkBo) {
 		// TODO Auto-generated method stub
-		TransactionId transactionId = spanChunkBo.getTransactionId();
+		/*TransactionId transactionId = spanChunkBo.getTransactionId();
 		String agentId = transactionId.getAgentId();
-        String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();
+        String id = agentId + EsIndexs.ID_SEP + transactionId.getAgentStartTime() + EsIndexs.ID_SEP + transactionId.getTransactionSequence();*/
         parseSpanChunkBo(spanChunkBo);
         try {
         	JSONObject jsonbject = BeanToJson.toEsTime(spanChunkBo);
-			EsClient.client().prepareIndex(EsIndexs.TRACES_CHUNK, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.TRACES_CHUNK, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block

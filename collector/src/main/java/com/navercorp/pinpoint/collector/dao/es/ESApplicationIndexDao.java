@@ -39,7 +39,7 @@ public class ESApplicationIndexDao implements ApplicationIndexDao {
 			jsonbject.put("code", agentInfo.getServiceType());
 			jsonbject.put("serviceType", serviceType.getName());
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			EsClient.client().prepareIndex(EsIndexs.APPLICATION_INDEX, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.APPLICATION_INDEX, EsIndexs.TYPE,id)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

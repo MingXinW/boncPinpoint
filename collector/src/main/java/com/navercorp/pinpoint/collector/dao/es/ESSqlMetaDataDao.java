@@ -26,11 +26,10 @@ public class ESSqlMetaDataDao implements SqlMetaDataDao {
 		if (logger.isDebugEnabled()) {
 			logger.debug("insert:{}", sqlMetaData);
 		}
-		String id = sqlMetaData.getAgentId() + EsIndexs.ID_SEP + sqlMetaData.getAgentStartTime() + EsIndexs.ID_SEP
-				+ sqlMetaData.getSqlId();
+		//String id = sqlMetaData.getAgentId() + EsIndexs.ID_SEP + sqlMetaData.getAgentStartTime() + EsIndexs.ID_SEP + sqlMetaData.getSqlId();
 		try {
 			JSONObject jsonbject = BeanToJson.toEsTime(sqlMetaData);
-			EsClient.client().prepareIndex(EsIndexs.SQL_META_DATA_VER2, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.SQL_META_DATA_VER2, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block

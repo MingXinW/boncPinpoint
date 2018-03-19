@@ -60,7 +60,7 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
                     host, bindApplicationName, bindServiceType, parentApplicationName, parentServiceType);
         }
         
-        String id = parentApplicationName + EsIndexs.ID_SEP + parentServiceType + EsIndexs.ID_SEP + statisticsRowSlot;
+        //String id = parentApplicationName + EsIndexs.ID_SEP + parentServiceType + EsIndexs.ID_SEP + statisticsRowSlot;
 
         try {
         	JSONObject jsonbject = new JSONObject();
@@ -68,8 +68,12 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 			jsonbject.put("bindApplicationName", bindApplicationName);
 			jsonbject.put("bindServiceType", bindServiceType);
 			
+			jsonbject.put("statisticsRowSlot", statisticsRowSlot);
+			jsonbject.put("parentApplicationName", parentApplicationName);
+			jsonbject.put("parentServiceType", parentServiceType);
+			
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			EsClient.client().prepareIndex(EsIndexs.HOST_APPLICATION_MAP_VER2, EsIndexs.TYPE, id)
+			EsClient.client().prepareIndex(EsIndexs.HOST_APPLICATION_MAP_VER2, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 			
 		} catch (Exception ex) {

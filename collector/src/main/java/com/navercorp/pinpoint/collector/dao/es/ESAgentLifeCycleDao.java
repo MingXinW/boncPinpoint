@@ -30,19 +30,15 @@ public class ESAgentLifeCycleDao implements AgentLifeCycleDao {
 			logger.debug("insert agent life cycle. {}", agentLifeCycleBo.toString());
 		}
 
-		final String agentId = agentLifeCycleBo.getAgentId();
+		/*final String agentId = agentLifeCycleBo.getAgentId();
 		final long startTimestamp = agentLifeCycleBo.getStartTimestamp();
-		final long eventIdentifier = agentLifeCycleBo.getEventIdentifier();
-		String id = agentId + EsIndexs.ID_SEP + startTimestamp + EsIndexs.ID_SEP + eventIdentifier;
+		final long eventIdentifier = agentLifeCycleBo.getEventIdentifier();*/
+		//String id = agentId + EsIndexs.ID_SEP + startTimestamp + EsIndexs.ID_SEP + eventIdentifier;
 
 		try {
-			/*ObjectMapper mapper = new ObjectMapper();
-			byte[] json = mapper.writeValueAsBytes(agentLifeCycleBo);
-			EsClient.client().prepareIndex(EsIndexs.AGENT_LIFECYCLE, EsIndexs.TYPE, id)
-					.setSource(json,XContentType.JSON).get();*/
-			/*EsClient.insert(agentLifeCycleBo,id, EsIndexs.AGENT_LIFECYCLE, EsIndexs.TYPE);*/
 			JSONObject jsonbject = BeanToJson.toEsTime(agentLifeCycleBo);
-			EsClient.client().prepareIndex(EsIndexs.AGENT_LIFECYCLE, EsIndexs.TYPE, id)
+			jsonbject.put("agentLifeCycleStateCode", agentLifeCycleBo.getAgentLifeCycleState().getCode());
+			EsClient.client().prepareIndex(EsIndexs.AGENT_LIFECYCLE, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
