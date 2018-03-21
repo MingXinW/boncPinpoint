@@ -9,13 +9,10 @@ import org.springframework.stereotype.Repository;
 import com.alibaba.fastjson.JSONObject;
 import com.navercorp.pinpoint.collector.dao.MapResponseTimeDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
-import com.navercorp.pinpoint.collector.dao.hbase.statistics.ColumnName;
-import com.navercorp.pinpoint.collector.dao.hbase.statistics.ResponseColumnName;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.common.util.ApplicationMapStatisticsUtils;
 
 @Repository("esMapResponseTimeDao")
 public class ESMapResponseTimeDao implements MapResponseTimeDao{
@@ -50,16 +47,16 @@ public class ESMapResponseTimeDao implements MapResponseTimeDao{
 	        // make row key. rowkey is me
 	        final long acceptedTime = acceptedTimeService.getAcceptedTime();
 	        
-	        final short slotNumber = ApplicationMapStatisticsUtils.getSlotNumber(applicationServiceType, elapsed, isError);
-	        final ColumnName selfColumnName = new ResponseColumnName(agentId, slotNumber);
+	       /* final short slotNumber = ApplicationMapStatisticsUtils.getSlotNumber(applicationServiceType, elapsed, isError);
+	        final ColumnName selfColumnName = new ResponseColumnName(agentId, slotNumber);*/
 	        
 	        JSONObject jsonbject = new JSONObject();
 			jsonbject.put("applicationName", applicationName);
 			jsonbject.put("applicationServiceType", applicationServiceType.getCode());
 			jsonbject.put("agentId", agentId);
-			jsonbject.put("hashCode", selfColumnName.hashCode());
 			jsonbject.put("acceptedTime", acceptedTime);
 			jsonbject.put("elapsed", elapsed);
+			jsonbject.put("isError", isError);
 			jsonbject = BeanToJson.addEsTime(jsonbject);
 			
 			EsClient.client().prepareIndex(EsIndexs.APPLICATION_MAP_STATISTICS_SELF_VER2, EsIndexs.TYPE)
