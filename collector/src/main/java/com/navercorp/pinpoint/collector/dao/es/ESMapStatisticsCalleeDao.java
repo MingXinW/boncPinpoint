@@ -10,13 +10,10 @@ import org.springframework.stereotype.Repository;
 import com.alibaba.fastjson.JSONObject;
 import com.navercorp.pinpoint.collector.dao.MapStatisticsCalleeDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
-import com.navercorp.pinpoint.collector.dao.hbase.statistics.CallerColumnName;
-import com.navercorp.pinpoint.collector.dao.hbase.statistics.ColumnName;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.common.util.ApplicationMapStatisticsUtils;
 
 @Repository("esMapStatisticsCalleeDao")
 public class ESMapStatisticsCalleeDao implements MapStatisticsCalleeDao{
@@ -55,8 +52,8 @@ public class ESMapStatisticsCalleeDao implements MapStatisticsCalleeDao{
 	        final long acceptedTime = acceptedTimeService.getAcceptedTime();
 	       
 	
-	        final short callerSlotNumber = ApplicationMapStatisticsUtils.getSlotNumber(calleeServiceType, elapsed, isError);
-	        final ColumnName callerColumnName = new CallerColumnName(callerServiceType.getCode(), callerApplicationName, callerHost, callerSlotNumber);
+	        /*final short callerSlotNumber = ApplicationMapStatisticsUtils.getSlotNumber(calleeServiceType, elapsed, isError);
+	        final ColumnName callerColumnName = new CallerColumnName(callerServiceType.getCode(), callerApplicationName, callerHost, callerSlotNumber);*/
 
 	        String key = callerApplicationName + "^" +callerServiceType.getName()+"~"+calleeApplicationName+"^"+calleeServiceType.getName();
 	        
@@ -66,11 +63,10 @@ public class ESMapStatisticsCalleeDao implements MapStatisticsCalleeDao{
 			jsonbject.put("callerServiceType", callerServiceType.getCode());
 			jsonbject.put("calleeApplicationName", calleeApplicationName);
 			jsonbject.put("callerApplicationName", callerApplicationName);
-			jsonbject.put("calleeHost", callerHost);
-			jsonbject.put("calleeSlotNumber", callerSlotNumber);
-			jsonbject.put("hashCode", callerColumnName.hashCode());
+			jsonbject.put("callerHost", callerHost);
 			jsonbject.put("acceptedTime", acceptedTime);
 			jsonbject.put("elapsed", elapsed);
+			jsonbject.put("isError", isError);
 			jsonbject = BeanToJson.addEsTime(jsonbject);
 			
 			EsClient.client().prepareIndex(EsIndexs.APPLICATION_MAP_STATISTICS_CALLEE_VER2, EsIndexs.TYPE)
