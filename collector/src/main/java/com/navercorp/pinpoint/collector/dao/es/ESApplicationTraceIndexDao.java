@@ -45,9 +45,9 @@ public class ESApplicationTraceIndexDao implements ApplicationTraceIndexDao {
 			jsonbject.put("applicationName", span.getApplicationName());
 			jsonbject.put("acceptedTime", acceptedTime);
 			jsonbject.put("transactionId", transactionId);
+			jsonbject.put("elapsed", span.getElapsed());
+			jsonbject.put("err", span.getErr());
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			/*EsClient.client().prepareIndex(EsIndexs.APPLICATION_TRACE_INDEX, EsIndexs.TYPE, id)
-			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();*/
 			
 			EsClient.insert(jsonbject,EsIndexs.APPLICATION_TRACE_INDEX, EsIndexs.TYPE);
 		} catch (Exception e) {
