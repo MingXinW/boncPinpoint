@@ -14,7 +14,6 @@ import com.navercorp.pinpoint.collector.util.AtomicLongUpdateMap;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
-import com.navercorp.pinpoint.common.util.TimeSlot;
 
 @Repository("esHostApplicationMapDao")
 public class ESHostApplicationMapDao implements HostApplicationMapDao {
@@ -24,8 +23,6 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 	@Autowired
 	private AcceptedTimeService acceptedTimeService;
 
-	@Autowired
-	private TimeSlot timeSlot;
 
 	// FIXME should modify to save a cachekey at each 30~50 seconds instead of
 	// saving at each time
@@ -43,18 +40,18 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 			throw new NullPointerException("bindApplicationName must not be null");
 		}
 
-		final long statisticsRowSlot = getSlotTime();
+		final long acceptedTime = acceptedTimeService.getAcceptedTime();
 
 		final CacheKey cacheKey = new CacheKey(host, bindApplicationName, bindServiceType, parentApplicationName,
 				parentServiceType);
-		final boolean needUpdate = updater.update(cacheKey, statisticsRowSlot);
+		final boolean needUpdate = updater.update(cacheKey, acceptedTime);
 		if (needUpdate) {
-			insertHostVer2(host, bindApplicationName, bindServiceType, statisticsRowSlot, parentApplicationName,
+			insertHostVer2(host, bindApplicationName, bindServiceType, acceptedTime, parentApplicationName,
 					parentServiceType);
 		}
 	}
 	
-	private void insertHostVer2(String host, String bindApplicationName, short bindServiceType, long statisticsRowSlot, String parentApplicationName, short parentServiceType) {
+	private void insertHostVer2(String host, String bindApplicationName, short bindServiceType, long acceptedTime, String parentApplicationName, short parentServiceType) {
         if (logger.isDebugEnabled()) {
             logger.debug("Insert host-application map. host={}, bindApplicationName={}, bindServiceType={}, parentApplicationName={}, parentServiceType={}",
                     host, bindApplicationName, bindServiceType, parentApplicationName, parentServiceType);
@@ -68,7 +65,7 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 			jsonbject.put("bindApplicationName", bindApplicationName);
 			jsonbject.put("bindServiceType", bindServiceType);
 			
-			jsonbject.put("statisticsRowSlot", statisticsRowSlot);
+			jsonbject.put("acceptedTime", acceptedTime);
 			jsonbject.put("parentApplicationName", parentApplicationName);
 			jsonbject.put("parentServiceType", parentServiceType);
 			
@@ -81,12 +78,6 @@ public class ESHostApplicationMapDao implements HostApplicationMapDao {
 			 
 		}
     }
-	
-	private long getSlotTime() {
-        final long acceptedTime = acceptedTimeService.getAcceptedTime();
-        return timeSlot.getTimeSlot(acceptedTime);
-    }
-	
 	private static final class CacheKey {
         private final String host;
         private final String applicationName;

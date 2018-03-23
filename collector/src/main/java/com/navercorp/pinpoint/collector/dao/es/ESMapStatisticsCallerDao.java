@@ -56,8 +56,9 @@ public class ESMapStatisticsCallerDao implements MapStatisticsCallerDao {
 			final ColumnName calleeColumnName = new CalleeColumnName(callerAgentId, calleeServiceType.getCode(),
 					calleeApplicationName, calleeHost, calleeSlotNumber);*/
 			//test-futao_TOMCAT^USER~test-futao^TOMCAT
-			String key = callerApplicationName + "^" +callerServiceType.getName()+"~"+calleeApplicationName+"^"+calleeServiceType.getName();
+			//String key = callerApplicationName + "^" +callerServiceType.getName()+"~"+calleeApplicationName+"^"+calleeServiceType.getName();
 			
+			String key = EsIndexs.buildCallKey(callerApplicationName,callerServiceType.getName(),calleeApplicationName,calleeServiceType.getName());
 			JSONObject jsonbject = new JSONObject();
 			jsonbject.put("callerAgentId", callerAgentId);
 			jsonbject.put("key", key);
