@@ -64,4 +64,10 @@ public class EsIndexs {
 	
 	public static final String AGENT_STAT_COL_ACTIVE_TRACE_HISTOGRAM = "aH";
 	
+	public static String buildCallKey(String callerApplicationName, String callerServiceTypeName, String calleeApplicationName,String calleeServiceTypeName) {
+		
+		String key = callerApplicationName + "^" +callerServiceTypeName+"~"+calleeApplicationName+"^"+calleeServiceTypeName;
+		return key;
+	}
+	
 }
