@@ -19,7 +19,6 @@ public class AgentInfoDaoProxy implements AgentInfoDao{
 	@Override
 	public void insert(TAgentInfo agentInfo) {
 		// TODO Auto-generated method stub
-		System.out.println(111);
 		hbaseAgentInfoDao.insert(agentInfo);
 		esAgentInfoDao.insert(agentInfo);
 	}
