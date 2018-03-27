@@ -10,6 +10,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.transport.TransportClient;
+
+import com.alibaba.fastjson.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
@@ -29,19 +32,22 @@ public class AgentStatESOperationFactory {
         }
         TransportClient client = EsClient.client();
         BulkRequestBuilder bulkRequest = client.prepareBulk();
-        
-        
+        ObjectMapper mapper = new ObjectMapper();
+        String timestamp = Long.toString(System.currentTimeMillis());
         Map<Long, List<T>> timeslots = slotAgentStatDataPoints(agentStatDataPoints);
 	        for (Map.Entry<Long, List<T>> timeslot : timeslots.entrySet()) {
 	           // long baseTimestamp = timeslot.getKey();
 	            List<T> slottedAgentStatDataPoints = timeslot.getValue();
+	            
+	    		String text = mapper.writeValueAsString(slottedAgentStatDataPoints);
+	    		JSONArray jsonArray = JSONArray.parseArray(text);
 	            //String id = agentId + EsIndexs.ID_SEP + agentStatType.getTypeCode() + EsIndexs.ID_SEP + baseTimestamp;
 	            bulkRequest.add(client.prepareIndex(EsIndexs.AGENT_STAT_V2, EsIndexs.TYPE)
 	                    .setSource(jsonBuilder()
 	                                .startObject()
-	                                    .field("stats", slottedAgentStatDataPoints)
+	                                    .field("stats", jsonArray)
 	                                    .field("agentStatType", agentStatType.getTypeCode())
-	                                    .field("@timestamp", Long.toString(System.currentTimeMillis()))
+	                                    .field("@timestamp", timestamp)
 	                                    .field("agentId", agentId)
 	                                    .field("typeCode", agentStatType.getTypeCode())
 	                                    .field("baseTimestamp", timeslot.getKey())
