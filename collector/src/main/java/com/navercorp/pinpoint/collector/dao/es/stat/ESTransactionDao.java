@@ -27,7 +27,7 @@ public class ESTransactionDao implements AgentStatDaoV2<TransactionBo> {
 			return;
 		}
 		try {
-			AgentStatESOperationFactory.createPuts(agentId, AgentStatType.ACTIVE_TRACE, transactionBos);
+			AgentStatESOperationFactory.createPuts(agentId, AgentStatType.TRANSACTION, transactionBos);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("esTransactionDao insert error. Cause:{}", e.getMessage(), e);
