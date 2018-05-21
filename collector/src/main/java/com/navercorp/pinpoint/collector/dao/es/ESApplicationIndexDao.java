@@ -30,7 +30,7 @@ public class ESApplicationIndexDao implements ApplicationIndexDao {
 		if (agentInfo == null) {
 			throw new NullPointerException("agentInfo must not be null");
 		}
-		String id = agentInfo.getApplicationName();
+		String id = agentInfo.getAgentId();
 		try {
 			ServiceType serviceType = registry.findServiceType(agentInfo.getServiceType());
 			JSONObject jsonbject = new JSONObject();
