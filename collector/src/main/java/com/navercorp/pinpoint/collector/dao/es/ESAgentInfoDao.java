@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.collector.dao.es;
 
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,17 @@ public class ESAgentInfoDao implements AgentInfoDao {
 			
 			String id = agentInfo.getAgentId() + EsIndexs.ID_SEP +  agentInfo.getStartTimestamp();
 			JSONObject jsonbject = BeanToJson.toEsTime(agentInfoBo);
-			EsClient.client().prepareIndex(EsIndexs.AGENT_INFO, EsIndexs.TYPE,id)
+
+			GetResponse response = EsClient.client().prepareGet(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id).get();
+			if(null == agentInfoBo.getServerMetaData()) {
+				jsonbject.put("serverMetaData", response.getSourceAsMap().get("serverMetaData"));
+			}
+			
+			if(null == agentInfoBo.getJvmInfo()) {
+				jsonbject.put("jvmInfo", response.getSourceAsMap().get("jvmInfo"));
+			}
+			
+			EsClient.client().prepareIndex(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id)
 					.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
