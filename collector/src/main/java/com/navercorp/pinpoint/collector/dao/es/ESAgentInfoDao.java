@@ -68,13 +68,17 @@ public class ESAgentInfoDao implements AgentInfoDao {
 			String id = agentInfo.getAgentId() + EsIndexs.ID_SEP +  agentInfo.getStartTimestamp();
 			JSONObject jsonbject = BeanToJson.toEsTime(agentInfoBo);
 
-			GetResponse response = EsClient.client().prepareGet(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id).get();
-			if(null == agentInfoBo.getServerMetaData()) {
-				jsonbject.put("serverMetaData", response.getSourceAsMap().get("serverMetaData"));
-			}
-			
-			if(null == agentInfoBo.getJvmInfo()) {
-				jsonbject.put("jvmInfo", response.getSourceAsMap().get("jvmInfo"));
+			if(null == agentInfoBo.getServerMetaData() || null == agentInfoBo.getJvmInfo()) {
+				GetResponse response = EsClient.client().prepareGet(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id).get();
+				if(null != response) {
+					if(null == agentInfoBo.getServerMetaData()) {
+						jsonbject.put("serverMetaData", response.getSourceAsMap().get("serverMetaData"));
+					}
+					
+					if(null == agentInfoBo.getJvmInfo()) {
+						jsonbject.put("jvmInfo", response.getSourceAsMap().get("jvmInfo"));
+					}
+				}
 			}
 			
 			EsClient.client().prepareIndex(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id)
