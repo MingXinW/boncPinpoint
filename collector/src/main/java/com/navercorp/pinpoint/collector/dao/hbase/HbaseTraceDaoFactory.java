@@ -21,11 +21,11 @@ public class HbaseTraceDaoFactory implements FactoryBean<TraceDao> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    @Qualifier("hbaseTraceDao")
+    @Qualifier("traceDaoProxy")
     private TraceDao v1;
 
     @Autowired
-    @Qualifier("hbaseTraceDaoV2")
+    @Qualifier("traceDaoV2Proxy")
     private TraceDao v2;
 
     @Autowired

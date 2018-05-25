@@ -25,7 +25,6 @@ import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class AgentLifeCycleHandler {
     @Resource(name = "agentEventWorker")
     private Executor executor;
 
-    @Autowired
+    @Resource(name = "agentLifeCycleDaoProxy")
     private AgentLifeCycleDao agentLifeCycleDao;
 
     public void handleLifeCycleEvent(PinpointServer pinpointServer, long eventTimestamp,

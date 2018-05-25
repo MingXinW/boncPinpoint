@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.collector.dao.ApiMetaDataDao;
 import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +36,8 @@ public class ApiMetaDataHandler implements RequestResponseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private ApiMetaDataDao sqlMetaDataDao;
+    @Resource(name ="apiMetaDataDaoProxy") 
+    private ApiMetaDataDao apiMetaDataDao;
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
@@ -52,7 +54,7 @@ public class ApiMetaDataHandler implements RequestResponseHandler {
         }
 
         try {
-            sqlMetaDataDao.insert(apiMetaData);
+        	apiMetaDataDao.insert(apiMetaData);
         } catch (Exception e) {
             logger.warn("{} handler error. Caused:{}", this.getClass(), e.getMessage(), e);
             TResult result = new TResult(false);

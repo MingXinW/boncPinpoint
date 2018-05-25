@@ -17,6 +17,9 @@
 package com.navercorp.pinpoint.collector.handler;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDao;
+
+import javax.annotation.Resource;
+
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +39,7 @@ public class AgentStatHandler implements Handler {
 
     private final Logger logger = LoggerFactory.getLogger(AgentStatHandler.class.getName());
 
-    @Autowired
+    @Resource(name ="agentStatDaoProxy") 
     private AgentStatDao agentStatDao;
 
     @Override

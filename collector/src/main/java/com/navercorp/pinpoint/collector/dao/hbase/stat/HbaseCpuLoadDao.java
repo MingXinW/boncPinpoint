@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author HyunGil Jeong
  */
-@Repository
+@Repository("hbaseCpuLoadDao")
 public class HbaseCpuLoadDao implements AgentStatDaoV2<CpuLoadBo> {
 
     @Autowired
