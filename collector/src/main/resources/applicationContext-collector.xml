@@ -96,7 +96,7 @@
         <property name="flushPeriod" value="${statistics.flushPeriod}"/>
     </bean> -->
     
-    <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
+    <!--<bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
         <beans:property name="cachedStatisticsDaoList">
             <beans:list>
                 <beans:ref bean="mapStatisticsCallerDaoProxy"/>
@@ -105,7 +105,7 @@
             </beans:list>
         </beans:property>
         <property name="flushPeriod" value="${statistics.flushPeriod}"/>
-    </bean>
+    </bean>-->
     
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
     </bean>
