@@ -11,7 +11,7 @@ import com.navercorp.pinpoint.collector.dao.AgentEventDao;
 import com.navercorp.pinpoint.collector.dao.es.base.EsClient;
 import com.navercorp.pinpoint.collector.util.BeanToJson;
 import com.navercorp.pinpoint.collector.util.EsIndexs;
-import com.navercorp.pinpoint.common.server.bo.AgentEventBo;
+import com.navercorp.pinpoint.common.server.bo.event.AgentEventBo;
 
 @Repository("esAgentEventDao")
 public class ESAgentEventDao implements AgentEventDao {

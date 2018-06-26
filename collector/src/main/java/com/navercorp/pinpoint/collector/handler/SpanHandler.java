@@ -16,26 +16,24 @@
 
 package com.navercorp.pinpoint.collector.handler;
 
-import java.util.List;
-
+import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
+import com.navercorp.pinpoint.collector.dao.HostApplicationMapDao;
 import com.navercorp.pinpoint.collector.dao.TraceDao;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
 import com.navercorp.pinpoint.common.server.bo.SpanFactory;
 import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-
+import com.navercorp.pinpoint.thrift.dto.TSpan;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
-import com.navercorp.pinpoint.collector.dao.HostApplicationMapDao;
-import com.navercorp.pinpoint.thrift.dto.TSpan;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author emeroad
@@ -47,6 +45,7 @@ public class SpanHandler implements SimpleHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
+    @Qualifier("traceDaoV2Proxy")
     private TraceDao traceDao;
 
     @Autowired

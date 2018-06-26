@@ -26,6 +26,7 @@ import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
@@ -43,7 +44,8 @@ public class AgentLifeCycleHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    @Resource(name = "agentLifeCycleDaoProxy")
+    @Autowired
+    @Qualifier("agentLifeCycleDaoProxy")
     private AgentLifeCycleDao agentLifeCycleDao;
 
     @Async("agentEventWorker")

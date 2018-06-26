@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.navercorp.pinpoint.collector.dao.AgentEventDao;
 import com.navercorp.pinpoint.collector.dao.es.ESAgentEventDao;
 import com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentEventDao;
-import com.navercorp.pinpoint.common.server.bo.AgentEventBo;
+import com.navercorp.pinpoint.common.server.bo.event.AgentEventBo;
 
 @Repository("agentEventDaoProxy")
 public class AgentEventDaoProxy implements AgentEventDao {

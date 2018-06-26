@@ -16,18 +16,11 @@
 package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
-import com.navercorp.pinpoint.common.server.bo.stat.ActiveTraceBo;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
-import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
-import com.navercorp.pinpoint.common.server.bo.stat.DataSourceListBo;
-import com.navercorp.pinpoint.common.server.bo.stat.DeadlockBo;
-import com.navercorp.pinpoint.common.server.bo.stat.JvmGcBo;
-import com.navercorp.pinpoint.common.server.bo.stat.JvmGcDetailedBo;
-import com.navercorp.pinpoint.common.server.bo.stat.ResponseTimeBo;
-import com.navercorp.pinpoint.common.server.bo.stat.TransactionBo;
+import com.navercorp.pinpoint.common.server.bo.stat.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,21 +32,27 @@ public class HBaseAgentStatService implements AgentStatService {
     private final Logger logger = LoggerFactory.getLogger(HBaseAgentStatService.class.getName());
 
     @Autowired
+    @Qualifier("jvmGcBoProxy")
     private AgentStatDaoV2<JvmGcBo> jvmGcDao;
 
     @Autowired
+    @Qualifier("jvmGcDetailedBoProxy")
     private AgentStatDaoV2<JvmGcDetailedBo> jvmGcDetailedDao;
 
     @Autowired
+    @Qualifier("cpuLoadBoProxy")
     private AgentStatDaoV2<CpuLoadBo> cpuLoadDao;
 
     @Autowired
+    @Qualifier("transactionBoProxy")
     private AgentStatDaoV2<TransactionBo> transactionDao;
 
     @Autowired
+    @Qualifier("activeTraceDaoProxy")
     private AgentStatDaoV2<ActiveTraceBo> activeTraceDao;
 
     @Autowired
+    @Qualifier("dataSourceListBoProxy")
     private AgentStatDaoV2<DataSourceListBo> dataSourceListDao;
 
     @Autowired

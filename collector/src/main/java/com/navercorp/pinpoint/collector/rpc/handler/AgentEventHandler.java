@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.collector.rpc.handler;
 
 import com.navercorp.pinpoint.collector.cluster.route.ResponseEvent;
 import com.navercorp.pinpoint.collector.dao.AgentEventDao;
-import com.navercorp.pinpoint.common.server.bo.AgentEventBo;
+import com.navercorp.pinpoint.common.server.bo.event.AgentEventBo;
 import com.navercorp.pinpoint.common.server.util.AgentEventMessageSerializer;
 import com.navercorp.pinpoint.common.server.util.AgentEventType;
 import com.navercorp.pinpoint.common.server.util.AgentEventTypeCategory;
