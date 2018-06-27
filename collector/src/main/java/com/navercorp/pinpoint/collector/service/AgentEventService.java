@@ -37,6 +37,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
@@ -54,6 +55,7 @@ public class AgentEventService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    @Qualifier("agentEventDaoProxy")
     private AgentEventDao agentEventDao;
 
     @Autowired
