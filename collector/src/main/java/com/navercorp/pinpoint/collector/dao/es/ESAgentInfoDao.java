@@ -71,12 +71,16 @@ public class ESAgentInfoDao implements AgentInfoDao {
 			if(null == agentInfoBo.getServerMetaData() || null == agentInfoBo.getJvmInfo()) {
 				GetResponse response = EsClient.client().prepareGet(EsIndexs.AGENT_INFO, EsIndexs.TYPE, id).get();
 				if(null != response) {
-					if(null == agentInfoBo.getServerMetaData()) {
-						jsonbject.put("serverMetaData", response.getSourceAsMap().get("serverMetaData"));
-					}
-					
-					if(null == agentInfoBo.getJvmInfo()) {
-						jsonbject.put("jvmInfo", response.getSourceAsMap().get("jvmInfo"));
+					if(null == response.getSourceAsMap()) {
+						logger.warn("no available agent info");
+					} else {
+						if(null == agentInfoBo.getServerMetaData()) {
+							jsonbject.put("serverMetaData", response.getSourceAsMap().get("serverMetaData"));
+						}
+
+						if(null == agentInfoBo.getJvmInfo()) {
+							jsonbject.put("jvmInfo", response.getSourceAsMap().get("jvmInfo"));
+						}
 					}
 				}
 			}
