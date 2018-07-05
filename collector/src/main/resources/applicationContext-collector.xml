@@ -68,9 +68,9 @@
     <import resource="classpath:applicationContext-collector-namespace.xml"/>
 
     <util:list id="cachedStatisticsDaoList" value-type="com.navercorp.pinpoint.collector.dao.CachedStatisticsDao">
-        <beans:ref bean="hbaseMapStatisticsCallerDao"/>
-        <beans:ref bean="hbaseMapStatisticsCalleeDao"/>
-        <beans:ref bean="hbaseMapResponseTimeDao"/>
+        <beans:ref bean="mapStatisticsCallerDaoProxy"/>
+        <beans:ref bean="mapStatisticsCalleeDaoProxy"/>
+        <beans:ref bean="mapResponseTimeDaoProxy"/>
     </util:list>
     <bean id="statisticsScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="#{cachedStatisticsDaoList.size()}"/>
@@ -80,32 +80,10 @@
         <property name="awaitTerminationSeconds" value="10"/>
     </bean>
     <task:scheduled-tasks scheduler="statisticsScheduler">
-        <task:scheduled ref="hbaseMapStatisticsCallerDao" method="flushAll" fixed-rate="1000"/>
-        <task:scheduled ref="hbaseMapStatisticsCalleeDao" method="flushAll" fixed-rate="1000"/>
-        <task:scheduled ref="hbaseMapResponseTimeDao" method="flushAll" fixed-rate="1000"/>
+        <task:scheduled ref="mapStatisticsCallerDaoProxy" method="flushAll" fixed-rate="1000"/>
+        <task:scheduled ref="mapStatisticsCalleeDaoProxy" method="flushAll" fixed-rate="1000"/>
+        <task:scheduled ref="mapResponseTimeDaoProxy" method="flushAll" fixed-rate="1000"/>
     </task:scheduled-tasks>
-
-    <!-- <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
-        <beans:property name="cachedStatisticsDaoList">
-            <beans:list>
-                <beans:ref bean="hbaseMapStatisticsCallerDao"/>
-                <beans:ref bean="hbaseMapStatisticsCalleeDao"/>
-                <beans:ref bean="hbaseMapResponseTimeDao"/>
-            </beans:list>
-        </beans:property>
-        <property name="flushPeriod" value="${statistics.flushPeriod}"/>
-    </bean> -->
-    
-    <!--<bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
-        <beans:property name="cachedStatisticsDaoList">
-            <beans:list>
-                <beans:ref bean="mapStatisticsCallerDaoProxy"/>
-                <beans:ref bean="mapStatisticsCalleeDaoProxy"/>
-                <beans:ref bean="mapResponseTimeDaoProxy"/>
-            </beans:list>
-        </beans:property>
-        <property name="flushPeriod" value="${statistics.flushPeriod}"/>
-    </bean>-->
     
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
     </bean>
