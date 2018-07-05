@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 @Repository("mapResponseTimeDaoProxy")
 public class MapResponseTimeDaoProxy implements MapResponseTimeDao {
 
-	@Autowired
+	@Autowired(required = false)
 	MapResponseTimeDao hbaseMapResponseTimeDao;
 	
 	@Autowired
@@ -17,18 +17,18 @@ public class MapResponseTimeDaoProxy implements MapResponseTimeDao {
 	
 	@Override
 	public void flushAll() {
-		// TODO Auto-generated method stub
-
-		hbaseMapResponseTimeDao.flushAll();
+		if(null != hbaseMapResponseTimeDao) {
+			hbaseMapResponseTimeDao.flushAll();
+		}
 		esMapResponseTimeDao.flushAll();
 	}
 
 	@Override
 	public void received(String applicationName, ServiceType serviceType, String agentId, int elapsed,
 			boolean isError) {
-		// TODO Auto-generated method stub
-
-		hbaseMapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
+		if(null != hbaseMapResponseTimeDao) {
+			hbaseMapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
+		}
 		esMapResponseTimeDao.received(applicationName, serviceType, agentId, elapsed, isError);
 	}
 

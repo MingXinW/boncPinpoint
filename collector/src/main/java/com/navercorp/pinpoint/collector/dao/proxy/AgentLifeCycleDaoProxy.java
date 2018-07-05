@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentLifeCycleDao;
@@ -13,13 +14,14 @@ public class AgentLifeCycleDaoProxy implements AgentLifeCycleDao {
 	@Resource
 	AgentLifeCycleDao esAgentLifeCycleDao;
 	
-	@Resource
+	@Autowired(required = false)
 	AgentLifeCycleDao hbaseAgentLifeCycleDao;
 	
 	@Override
 	public void insert(AgentLifeCycleBo agentLifeCycleBo) {
-		// TODO Auto-generated method stub
-		hbaseAgentLifeCycleDao.insert(agentLifeCycleBo);
+		if(null != hbaseAgentLifeCycleDao) {
+			hbaseAgentLifeCycleDao.insert(agentLifeCycleBo);
+		}
 		esAgentLifeCycleDao.insert(agentLifeCycleBo);
 	}
 

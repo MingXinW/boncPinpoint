@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.StringMetaDataDao;
@@ -13,15 +14,15 @@ public class StringMetaDataDaoProxy implements StringMetaDataDao {
 	@Resource
 	StringMetaDataDao esStringMetaDataDao;
 	
-	@Resource
+	@Autowired(required = false)
 	StringMetaDataDao hbaseStringMetaDataDao;
 	
 	
 	@Override
 	public void insert(TStringMetaData stringMetaData) {
-		// TODO Auto-generated method stub
-
-		hbaseStringMetaDataDao.insert(stringMetaData);
+		if(null != hbaseStringMetaDataDao) {
+			hbaseStringMetaDataDao.insert(stringMetaData);
+		}
 		esStringMetaDataDao.insert(stringMetaData);
 	}
 

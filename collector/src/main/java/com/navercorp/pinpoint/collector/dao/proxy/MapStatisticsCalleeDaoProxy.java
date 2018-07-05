@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 @Repository("mapStatisticsCalleeDaoProxy")
 public class MapStatisticsCalleeDaoProxy implements MapStatisticsCalleeDao{
 
-	@Autowired
+	@Autowired(required = false)
 	MapStatisticsCalleeDao hbaseMapStatisticsCalleeDao;
 	
 	@Autowired
@@ -17,16 +17,18 @@ public class MapStatisticsCalleeDaoProxy implements MapStatisticsCalleeDao{
 	
 	@Override
 	public void flushAll() {
-		// TODO Auto-generated method stub
-		hbaseMapStatisticsCalleeDao.flushAll();
+		if(null != hbaseMapStatisticsCalleeDao) {
+			hbaseMapStatisticsCalleeDao.flushAll();
+		}
 		esMapStatisticsCalleeDao.flushAll();
 	}
 
 	@Override
 	public void update(String calleeApplicationName, ServiceType calleeServiceType, String callerApplicationName,
 			ServiceType callerServiceType, String callerHost, int elapsed, boolean isError) {
-		// TODO Auto-generated method stub
-		hbaseMapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
+		if(null != hbaseMapStatisticsCalleeDao) {
+			hbaseMapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
+		}
 		esMapStatisticsCalleeDao.update(calleeApplicationName, calleeServiceType, callerApplicationName, callerServiceType, callerHost, elapsed, isError);
 	}
 

@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentInfoDao;
@@ -13,13 +14,14 @@ public class AgentInfoDaoProxy implements AgentInfoDao{
 	@Resource
 	AgentInfoDao esAgentInfoDao;
 	
-	@Resource
+	@Autowired(required = false)
 	AgentInfoDao hbaseAgentInfoDao;
 	
 	@Override
 	public void insert(TAgentInfo agentInfo) {
-		// TODO Auto-generated method stub
-		hbaseAgentInfoDao.insert(agentInfo);
+		if(null != hbaseAgentInfoDao) {
+			hbaseAgentInfoDao.insert(agentInfo);
+		}
 		esAgentInfoDao.insert(agentInfo);
 	}
 

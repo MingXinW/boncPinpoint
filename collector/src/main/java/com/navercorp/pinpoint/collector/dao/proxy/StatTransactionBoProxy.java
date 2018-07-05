@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
@@ -13,7 +14,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.TransactionBo;
 @Repository("transactionBoProxy")
 public class StatTransactionBoProxy implements AgentStatDaoV2<TransactionBo> {
 
-	@Resource
+	@Autowired(required = false)
 	AgentStatDaoV2<TransactionBo> hbaseTransactionDao;
 	
 	@Resource
@@ -21,8 +22,9 @@ public class StatTransactionBoProxy implements AgentStatDaoV2<TransactionBo> {
 	
 	@Override
 	public void insert(String agentId, List<TransactionBo> agentStatDataPoints) {
-		// TODO Auto-generated method stub
-		hbaseTransactionDao.insert(agentId, agentStatDataPoints);
+		if(null != hbaseTransactionDao) {
+			hbaseTransactionDao.insert(agentId, agentStatDataPoints);
+		}
 		esTransactionDao.insert(agentId, agentStatDataPoints);
 	}
 

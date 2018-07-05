@@ -55,10 +55,10 @@ public class HBaseAgentStatService implements AgentStatService {
     @Qualifier("dataSourceListBoProxy")
     private AgentStatDaoV2<DataSourceListBo> dataSourceListDao;
 
-    @Autowired
+    @Autowired(required = false)
     private AgentStatDaoV2<ResponseTimeBo> responseTimeDao;
 
-    @Autowired
+    @Autowired(required = false)
     private AgentStatDaoV2<DeadlockBo> deadlockDao;
 
     @Override

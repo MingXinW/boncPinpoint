@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
@@ -12,7 +13,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
 @Repository("cpuLoadBoProxy")
 public class StatCpuLoadBoProxy implements AgentStatDaoV2<CpuLoadBo> {
 
-	@Resource
+	@Autowired(required = false)
 	AgentStatDaoV2<CpuLoadBo> hbaseCpuLoadDao;
 	
 	@Resource
@@ -20,8 +21,9 @@ public class StatCpuLoadBoProxy implements AgentStatDaoV2<CpuLoadBo> {
 	
 	@Override
 	public void insert(String agentId, List<CpuLoadBo> agentStatDataPoints) {
-		// TODO Auto-generated method stub
-		hbaseCpuLoadDao.insert(agentId, agentStatDataPoints);
+		if(null != hbaseCpuLoadDao) {
+			hbaseCpuLoadDao.insert(agentId, agentStatDataPoints);
+		}
 		esCpuLoadDao.insert(agentId, agentStatDataPoints);
 	}
 

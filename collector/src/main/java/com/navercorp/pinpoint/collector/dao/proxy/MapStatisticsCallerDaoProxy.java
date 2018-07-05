@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 @Repository("mapStatisticsCallerDaoProxy")
 public class MapStatisticsCallerDaoProxy implements MapStatisticsCallerDao {
 
-	@Autowired
+	@Autowired(required = false)
 	private MapStatisticsCallerDao hbaseMapStatisticsCallerDao;
 
 	@Autowired
@@ -17,8 +17,9 @@ public class MapStatisticsCallerDaoProxy implements MapStatisticsCallerDao {
 
 	@Override
 	public void flushAll() {
-		// TODO Auto-generated method stub
-		hbaseMapStatisticsCallerDao.flushAll();
+		if(null != hbaseMapStatisticsCallerDao) {
+			hbaseMapStatisticsCallerDao.flushAll();
+		}
 		esMapStatisticsCallerDao.flushAll();
 	}
 
@@ -26,9 +27,9 @@ public class MapStatisticsCallerDaoProxy implements MapStatisticsCallerDao {
 	public void update(String callerApplicationName, ServiceType callerServiceType, String callerAgentId,
 			String calleeApplicationName, ServiceType calleeServiceType, String calleeHost, int elapsed,
 			boolean isError) {
-		// TODO Auto-generated method stub
-
-		hbaseMapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
+		if(null != hbaseMapStatisticsCallerDao) {
+			hbaseMapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
+		}
 		esMapStatisticsCallerDao.update(callerApplicationName, callerServiceType, callerAgentId, calleeApplicationName, calleeServiceType, calleeHost, elapsed, isError);
 	}
 

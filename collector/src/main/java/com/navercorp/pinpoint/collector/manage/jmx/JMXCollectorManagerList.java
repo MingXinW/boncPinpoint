@@ -47,7 +47,7 @@ public class JMXCollectorManagerList {
     @Autowired
     private ClusterManager clusterManager;
 
-    @Autowired
+    @Autowired(required = false)
     private HBaseManager hBaseManager;
 
     public List<CollectorManager> getSupportList() {

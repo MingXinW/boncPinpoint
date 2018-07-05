@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.ApplicationTraceIndexDao;
@@ -13,14 +14,14 @@ public class ApplicationTraceIndexDaoProxy implements ApplicationTraceIndexDao {
 	@Resource
 	ApplicationTraceIndexDao esApplicationTraceIndexDao;
 	
-	@Resource
+	@Autowired(required = false)
 	ApplicationTraceIndexDao hbaseApplicationTraceIndexDao;
 	
 	@Override
 	public void insert(TSpan span) {
-		// TODO Auto-generated method stub
-
-		hbaseApplicationTraceIndexDao.insert(span);
+		if(null != hbaseApplicationTraceIndexDao) {
+			hbaseApplicationTraceIndexDao.insert(span);
+		}
 		esApplicationTraceIndexDao.insert(span);
 	}
 

@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentEventDao;
@@ -12,7 +13,7 @@ import com.navercorp.pinpoint.common.server.bo.event.AgentEventBo;
 @Repository("agentEventDaoProxy")
 public class AgentEventDaoProxy implements AgentEventDao {
 
-	@Resource
+	@Autowired(required = false)
 	private HbaseAgentEventDao hbaseAgentEventDao;
 
 	@Resource
@@ -20,7 +21,9 @@ public class AgentEventDaoProxy implements AgentEventDao {
 
 	@Override
 	public void insert(AgentEventBo agentEventBo) {
-		hbaseAgentEventDao.insert(agentEventBo);
+		if(null != hbaseAgentEventDao) {
+			hbaseAgentEventDao.insert(agentEventBo);
+		}
 		esAgentEventDao.insert(agentEventBo);
 	}
 
