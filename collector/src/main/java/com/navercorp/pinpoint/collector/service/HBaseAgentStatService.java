@@ -71,8 +71,10 @@ public class HBaseAgentStatService implements AgentStatService {
             this.transactionDao.insert(agentId, agentStatBo.getTransactionBos());
             this.activeTraceDao.insert(agentId, agentStatBo.getActiveTraceBos());
             this.dataSourceListDao.insert(agentId, agentStatBo.getDataSourceListBos());
-            this.responseTimeDao.insert(agentId, agentStatBo.getResponseTimeBos());
-            this.deadlockDao.insert(agentId, agentStatBo.getDeadlockBos());
+            if(null != responseTimeDao && null != deadlockDao) {
+                this.responseTimeDao.insert(agentId, agentStatBo.getResponseTimeBos());
+                this.deadlockDao.insert(agentId, agentStatBo.getDeadlockBos());
+            }
         } catch (Exception e) {
             logger.warn("Error inserting AgentStatBo. Caused:{}", e.getMessage(), e);
         }
