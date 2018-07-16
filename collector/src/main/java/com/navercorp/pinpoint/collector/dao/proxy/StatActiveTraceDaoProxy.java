@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.AgentStatDaoV2;
@@ -14,6 +15,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.ActiveTraceBo;
 public class StatActiveTraceDaoProxy implements AgentStatDaoV2<ActiveTraceBo> {
 
 	@Autowired(required = false)
+	@Qualifier("hbaseActiveTraceDao")
 	AgentStatDaoV2<ActiveTraceBo> hbaseActiveTraceDao;
 	
 	@Resource

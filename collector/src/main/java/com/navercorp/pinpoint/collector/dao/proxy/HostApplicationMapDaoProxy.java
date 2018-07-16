@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.collector.dao.proxy;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.HostApplicationMapDao;
@@ -14,6 +15,7 @@ public class HostApplicationMapDaoProxy implements HostApplicationMapDao {
 	HostApplicationMapDao esHostApplicationMapDao;
 	
 	@Autowired(required = false)
+	@Qualifier("hbaseHostApplicationMapDao")
 	HostApplicationMapDao hbaseHostApplicationMapDao;
 	
 	@Override

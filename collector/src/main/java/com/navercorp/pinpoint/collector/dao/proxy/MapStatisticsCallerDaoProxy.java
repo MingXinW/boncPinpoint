@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.collector.dao.proxy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.collector.dao.MapStatisticsCallerDao;
@@ -10,6 +11,7 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 public class MapStatisticsCallerDaoProxy implements MapStatisticsCallerDao {
 
 	@Autowired(required = false)
+	@Qualifier("hbaseMapStatisticsCallerDao")
 	private MapStatisticsCallerDao hbaseMapStatisticsCallerDao;
 
 	@Autowired
