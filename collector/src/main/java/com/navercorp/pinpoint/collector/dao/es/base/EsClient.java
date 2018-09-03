@@ -60,8 +60,7 @@ public class EsClient {
 
 	@PostConstruct
 	private void initClient() {
-		Settings settings = Settings.builder().put("cluster.name", clusterName).build();
-		nativeClient = new PreBuiltTransportClient(settings);
+		nativeClient = new PreBuiltTransportClient(settings());
 		String[] hostsArray = hosts.split(",");
 		for (String host : hostsArray) {
 			String[] hostAndPort = host.split(":");
@@ -73,8 +72,14 @@ public class EsClient {
 			} catch (NumberFormatException e) {
 				logger.error("es cluster port error {}", hostAndPort[1]);
 			}
-
 		}
+	}
+
+	private Settings settings() {
+		return Settings.builder().put("client.transport.ping_timeout", "15s")
+				.put("client.transport.sniff", true).put("client.transport.nodes_sampler_interval", "15s")
+				.put("cluster.name", clusterName)
+				.build();
 	}
 
 	public static TransportClient client() {
@@ -181,6 +186,5 @@ public class EsClient {
                  System.out.println(next.getKey() + ": " + next.getValue());
              }
 		}
-		
 	}
 }
