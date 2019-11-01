@@ -58,8 +58,8 @@ public class ESMapResponseTimeDao implements MapResponseTimeDao{
 			jsonbject.put("elapsed", elapsed);
 			jsonbject.put("isError", isError);
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			
-			EsClient.client().prepareIndex(EsIndexs.APPLICATION_MAP_STATISTICS_SELF_VER2, EsIndexs.TYPE)
+			EsIndexs esIndexsMrtd=new EsIndexs();
+			EsClient.client().prepareIndex(esIndexsMrtd.APPLICATION_MAP_STATISTICS_SELF_VER2, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
         } catch (Exception e) {
 			// TODO Auto-generated catch block

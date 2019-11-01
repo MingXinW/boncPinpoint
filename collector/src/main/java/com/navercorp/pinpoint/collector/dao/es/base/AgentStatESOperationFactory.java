@@ -42,7 +42,8 @@ public class AgentStatESOperationFactory {
 	    		String text = mapper.writeValueAsString(slottedAgentStatDataPoints);
 	    		JSONArray jsonArray = JSONArray.parseArray(text);
 	            //String id = agentId + EsIndexs.ID_SEP + agentStatType.getTypeCode() + EsIndexs.ID_SEP + baseTimestamp;
-	            bulkRequest.add(client.prepareIndex(EsIndexs.AGENT_STAT_V2, EsIndexs.TYPE)
+	    		EsIndexs esIndexsAsteo = new EsIndexs();
+	            bulkRequest.add(client.prepareIndex(esIndexsAsteo.AGENT_STAT_V2, EsIndexs.TYPE)
 	                    .setSource(jsonBuilder()
 	                                .startObject()
 	                                    .field("stats", jsonArray)

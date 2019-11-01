@@ -48,8 +48,8 @@ public class ESApplicationTraceIndexDao implements ApplicationTraceIndexDao {
 			jsonbject.put("elapsed", span.getElapsed());
 			jsonbject.put("err", span.getErr());
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			
-			EsClient.insert(jsonbject,EsIndexs.APPLICATION_TRACE_INDEX, EsIndexs.TYPE);
+			EsIndexs esIndexsAtd=new EsIndexs();
+			EsClient.insert(jsonbject,esIndexsAtd.APPLICATION_TRACE_INDEX, EsIndexs.TYPE);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("esApplicationTraceIndexDao insert error. Cause:{}", e.getMessage(), e);

@@ -38,7 +38,8 @@ public class ESAgentLifeCycleDao implements AgentLifeCycleDao {
 		try {
 			JSONObject jsonbject = BeanToJson.toEsTime(agentLifeCycleBo);
 			jsonbject.put("agentLifeCycleStateCode", agentLifeCycleBo.getAgentLifeCycleState().getCode());
-			EsClient.client().prepareIndex(EsIndexs.AGENT_LIFECYCLE, EsIndexs.TYPE)
+			EsIndexs esIndexsAlc=new EsIndexs();
+			EsClient.client().prepareIndex(esIndexsAlc.AGENT_LIFECYCLE, EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
