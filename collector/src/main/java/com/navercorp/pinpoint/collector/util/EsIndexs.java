@@ -81,7 +81,7 @@ public class EsIndexs {
     private static List<String> listMonth = new ArrayList<>();
     private static List<String> listDay = new ArrayList<>();
 
-    @Value("#{'${list.day}'.split(',')}")
+    @Value("#{'${es.indexs.numerous.list.day.zone}'.split(',')}")
     public void setListDay(List<String> listDay) {
         EsIndexs.listDay = listDay;
 
@@ -95,20 +95,20 @@ public class EsIndexs {
         return listMonth;
     }
 
-    @Value("#{'${list.month}'.split(',')}")
+    @Value("#{'${es.indexs.numerous.list.month.zone}'.split(',')}")
     public void setListMonth(List<String> listMonth) {
         EsIndexs.listMonth = listMonth;
     }
 
     private static String byDay() {
         Date nowDay = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         String ndate = dateFormat.format(nowDay);
         return  ndate;
     }
     private static String byMonth() {
         Date nowMonth = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM");
         String ndate = dateFormat.format(nowMonth);
         return  ndate;
     }
@@ -116,11 +116,11 @@ public class EsIndexs {
     public static String getIndex(String indexSuffix){
         if(listDay.contains(indexSuffix)){
 
-            return indexSuffix + " " + byDay() ;
+            return indexSuffix + "-" + byDay() ;
 
         }else if(listMonth.contains(indexSuffix)) {
 
-            return indexSuffix  + " " + byMonth();
+            return indexSuffix  + "-" + byMonth();
         }else {
             return indexSuffix;
         }
