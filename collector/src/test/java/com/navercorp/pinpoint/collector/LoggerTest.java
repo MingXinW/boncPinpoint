@@ -16,14 +16,39 @@
 
 package com.navercorp.pinpoint.collector;
 
+import com.navercorp.pinpoint.collector.util.EsIndexs;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author emeroad
  */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="classpath:applicationContext-collector.xml")
 public class LoggerTest {
+
+    @Autowired
+    EsIndexs esIndexs;
+    @Test
+    public void testValue(){
+        System.out.println(esIndexs.getListDay());
+        System.out.println(esIndexs.getListMonth());
+    }
+
+
+    @Test
+    public void test(){
+        String sr = EsIndexs.getIndex(EsIndexs.APPLICATION_MAP_STATISTICS_CALLER_VER2);
+        System.out.println(sr);
+    }
+
+
     @Test
     public void log() {
         Logger test = LoggerFactory.getLogger(LoggerTest.class);

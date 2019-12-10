@@ -42,8 +42,7 @@ public class ESTraceDaoV2 implements TraceDao {
 		try {
 			JSONObject jsonObject = BeanToJson.toEsTime(spanBo);
 			addAnnotationValueType(spanBo, jsonObject);
-			EsIndexs esIndexsTdv2=new EsIndexs();
-			EsClient.client().prepareIndex(esIndexsTdv2.TRACE_V2, EsIndexs.TYPE)
+			EsClient.client().prepareIndex(EsIndexs.TRACE_V2, EsIndexs.TYPE)
 			.setSource(jsonObject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -62,8 +61,7 @@ public class ESTraceDaoV2 implements TraceDao {
 		try {
 			JSONObject jsonObject = BeanToJson.toEsTime(spanChunkBo);
 			addAnnotationValueType(spanChunkBo, jsonObject);
-			EsIndexs esIndexsTcv=new EsIndexs();
-			EsClient.client().prepareIndex(esIndexsTcv.TRACE_CHUNK_V2, EsIndexs.TYPE)
+			EsClient.client().prepareIndex(EsIndexs.getIndex(EsIndexs.TRACE_CHUNK_V2), EsIndexs.TYPE)
 			.setSource(jsonObject.toJSONString(),XContentType.JSON).get();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block

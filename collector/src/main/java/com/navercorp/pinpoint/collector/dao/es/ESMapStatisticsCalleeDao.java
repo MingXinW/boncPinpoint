@@ -68,8 +68,7 @@ public class ESMapStatisticsCalleeDao implements MapStatisticsCalleeDao{
 			jsonbject.put("elapsed", elapsed);
 			jsonbject.put("isError", isError);
 			jsonbject = BeanToJson.addEsTime(jsonbject);
-			EsIndexs esIndexsMsce=new EsIndexs();
-			EsClient.client().prepareIndex(esIndexsMsce.APPLICATION_MAP_STATISTICS_CALLER_VER2, EsIndexs.TYPE)
+			EsClient.client().prepareIndex(EsIndexs.getIndex(EsIndexs.APPLICATION_MAP_STATISTICS_CALLER_VER2), EsIndexs.TYPE)
 			.setSource(jsonbject.toJSONString(), XContentType.JSON).get();
         } catch (Exception e) {
 			// TODO Auto-generated catch block

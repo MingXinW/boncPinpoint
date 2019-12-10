@@ -1,38 +1,31 @@
 package com.navercorp.pinpoint.collector.util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Component
 public class EsIndexs {
-	public String byDay() {
-		Date nowDay = new Date();
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	    String ndate = dateFormat.format(nowDay);
-	    return  ndate;	
-	}
-	public String byMonth() {
-		Date nowMonth = new Date();
-	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
-	    String ndate = dateFormat.format(nowMonth);
-	    return  ndate;
-	}
-	
-	
+
 	public static final String ID_SEP = "&";
 
 	public static final String TYPE = "type";
 	
 	public static final String AGENT_INFO = "p_agent_info";
 	
-	public String AGENT_EVENT = "p_agent_event"+"-"+byMonth();
+	public static final String AGENT_EVENT = "p_agent_event";
 	
-	public String AGENT_LIFECYCLE = "p_agent_life_cycle"+"-"+byMonth();
+	public static final String AGENT_LIFECYCLE = "p_agent_life_cycle";
 	 
 	public static final String API_METADATA = "p_api_meta_data";
 	
 	public static final String APPLICATION_INDEX = "p_application_index";
 	
-	public String APPLICATION_TRACE_INDEX = "p_application_trace_index"+"-"+byDay();
+	public static final String APPLICATION_TRACE_INDEX = "p_application_trace_index";
 	
 	public static final String HOST_APPLICATION_MAP_VER2 = "p_host_application_map_ver2";
 	
@@ -40,7 +33,7 @@ public class EsIndexs {
 	//////////////////////////////////////
 	public static final String AGENT_STAT = "p_agent_stat";
 	
-	public String AGENT_STAT_V2 = "p_agent_stat_v2"+"-"+byMonth();
+	public static final String AGENT_STAT_V2 = "p_agent_stat_v2";
 	
 	public static final String SQL_META_DATA_VER2 = "p_sql_meta_data_ver2";
 	
@@ -48,14 +41,14 @@ public class EsIndexs {
 	
 	public static final String TRACES_CHUNK = "p_traces_chunk";
 	
-	public String TRACE_V2 = "p_trace_v2"+"-"+byDay();
-	public String TRACE_CHUNK_V2 = "p_trace_chunk_v2"+"-"+byDay();
+	public static final String TRACE_V2 = "p_trace_v2";
+	public static final String TRACE_CHUNK_V2 = "p_trace_chunk_v2";
 	
-	public String APPLICATION_MAP_STATISTICS_CALLER_VER2 = "p_application_map_statistics_caller_ver2"+"-"+byDay();
+	public static final String APPLICATION_MAP_STATISTICS_CALLER_VER2 = "p_application_map_statistics_caller_ver2";
 	
-	public String APPLICATION_MAP_STATISTICS_CALLEE_VER2 = "p_application_map_statistics_callee_ver2"+"-"+byDay();
+	public static final String APPLICATION_MAP_STATISTICS_CALLEE_VER2 = "p_application_map_statistics_callee_ver2";
 	
-	public String APPLICATION_MAP_STATISTICS_SELF_VER2 = "p_application_map_statistics_self_ver2"+"-"+byDay();
+	public static final String APPLICATION_MAP_STATISTICS_SELF_VER2 = "p_application_map_statistics_self_ver2";
 	
 	
 	//////////////////////////////////////////////
@@ -84,5 +77,55 @@ public class EsIndexs {
 		String key = callerApplicationName + "^" +callerServiceTypeName+"~"+calleeApplicationName+"^"+calleeServiceTypeName;
 		return key;
 	}
+
+    private static List<String> listMonth = new ArrayList<>();
+    private static List<String> listDay = new ArrayList<>();
+
+    @Value("#{'${list.day}'.split(',')}")
+    public void setListDay(List<String> listDay) {
+        EsIndexs.listDay = listDay;
+
+    }
+
+    public  List<String> getListDay() {
+        return listDay;
+    }
+
+    public  List<String> getListMonth() {
+        return listMonth;
+    }
+
+    @Value("#{'${list.month}'.split(',')}")
+    public void setListMonth(List<String> listMonth) {
+        EsIndexs.listMonth = listMonth;
+    }
+
+    private static String byDay() {
+        Date nowDay = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String ndate = dateFormat.format(nowDay);
+        return  ndate;
+    }
+    private static String byMonth() {
+        Date nowMonth = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        String ndate = dateFormat.format(nowMonth);
+        return  ndate;
+    }
+
+    public static String getIndex(String indexSuffix){
+        if(listDay.contains(indexSuffix)){
+
+            return indexSuffix + " " + byDay() ;
+
+        }else if(listMonth.contains(indexSuffix)) {
+
+            return indexSuffix  + " " + byMonth();
+        }else {
+            return indexSuffix;
+        }
+    }
+
+
 	
 }

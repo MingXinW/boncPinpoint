@@ -39,8 +39,7 @@ public class ESAgentEventDao implements AgentEventDao {
 	public void insertToEs(AgentEventBo agentEventBo) throws JsonProcessingException{
 		JSONObject jsonbject = BeanToJson.toEsTime(agentEventBo);
 		jsonbject.put("eventTypeCode", agentEventBo.getEventType().getCode());
-		EsIndexs esIndexAed=new EsIndexs();
-		EsClient.client().prepareIndex(esIndexAed.AGENT_EVENT, EsIndexs.TYPE)
+		EsClient.client().prepareIndex(EsIndexs.getIndex(EsIndexs.AGENT_EVENT), EsIndexs.TYPE)
 		.setSource(jsonbject.toJSONString(),XContentType.JSON).get();
 	}
 
