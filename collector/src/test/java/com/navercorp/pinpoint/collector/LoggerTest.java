@@ -33,12 +33,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations="classpath:applicationContext-collector.xml")
 public class LoggerTest {
 
-    @Autowired
-    EsIndexs esIndexs;
+    //@Autowired
+    //EsIndexs esIndexs;
     @Test
     public void testValue(){
-        System.out.println(esIndexs.getListDay());
-        System.out.println(esIndexs.getListMonth());
+       // System.out.println(esIndexs.getListDay());
+       // System.out.println(esIndexs.getListMonth());
     }
 
 

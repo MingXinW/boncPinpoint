@@ -71,6 +71,13 @@ public class EsIndexs {
 	public static final String AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION = "tUnSC";
 	
 	public static final String AGENT_STAT_COL_ACTIVE_TRACE_HISTOGRAM = "aH";
+
+	private static final String INDEX_DATA_SUFFIX_PATTERN = "yyyy.MM.dd";
+
+	private static final String INDEX_MONTH_SUFFIX_PATTERN = "yyyy.MM";
+
+	private static final String INDEX_DATA_SEPARATOR = "-";
+
 	
 	public static String buildCallKey(String callerApplicationName, String callerServiceTypeName, String calleeApplicationName,String calleeServiceTypeName) {
 		
@@ -81,7 +88,7 @@ public class EsIndexs {
     private static List<String> listMonth = new ArrayList<>();
     private static List<String> listDay = new ArrayList<>();
 
-    @Value("#{'${es.indexs.numerous.list.day.zone}'.split(',')}")
+    @Value("#{'${es.indices.split.strategy.scope.day}'.split(',')}")
     public void setListDay(List<String> listDay) {
         EsIndexs.listDay = listDay;
 
@@ -95,34 +102,31 @@ public class EsIndexs {
         return listMonth;
     }
 
-    @Value("#{'${es.indexs.numerous.list.month.zone}'.split(',')}")
+    @Value("#{'${es.indices.split.strategy.scope.month}'.split(',')}")
     public void setListMonth(List<String> listMonth) {
         EsIndexs.listMonth = listMonth;
     }
 
-    private static String byDay() {
+    private static String byDaySuffix() {
         Date nowDay = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        String ndate = dateFormat.format(nowDay);
-        return  ndate;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(INDEX_DATA_SUFFIX_PATTERN);
+        String dateStr = dateFormat.format(nowDay);
+        return  dateStr;
     }
-    private static String byMonth() {
+    private static String byMonthSuffix() {
         Date nowMonth = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM");
-        String ndate = dateFormat.format(nowMonth);
-        return  ndate;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(INDEX_MONTH_SUFFIX_PATTERN);
+        String dateStr = dateFormat.format(nowMonth);
+        return  dateStr;
     }
 
-    public static String getIndex(String indexSuffix){
-        if(listDay.contains(indexSuffix)){
-
-            return indexSuffix + "-" + byDay() ;
-
-        }else if(listMonth.contains(indexSuffix)) {
-
-            return indexSuffix  + "-" + byMonth();
+    public static String getIndex(String index){
+        if(listDay.contains(index)){
+            return index + INDEX_DATA_SEPARATOR + byDaySuffix() ;
+        }else if(listMonth.contains(index)) {
+            return index + INDEX_DATA_SEPARATOR + byMonthSuffix();
         }else {
-            return indexSuffix;
+            return index;
         }
     }
 
