@@ -33,6 +33,18 @@ public class PinpointBootStrap {
 
     private static final LoadState STATE = new LoadState();
 
+    public static boolean attached = false;
+    private static boolean envPrivate = false;
+
+    /**
+     * for jdk 1.6+
+     * @param agentArgs
+     * @param instrumentation
+     */
+    public static void agentmain(String agentArgs, Instrumentation instrumentation) {
+        attached = true;
+        premain(agentArgs, instrumentation);
+    }
 
     public static void premain(String agentArgs, Instrumentation instrumentation) {
         if (agentArgs == null) {
